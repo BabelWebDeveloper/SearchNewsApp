@@ -3,6 +3,8 @@
  */
 
 public with sharing class Source {
+    @AuraEnabled
     public String id;
+    @AuraEnabled
     public String name;
 }

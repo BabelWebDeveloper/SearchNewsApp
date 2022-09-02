@@ -1,0 +1,33 @@
+<aura:component description="ListSearchNews" implements="flexipage:availableForAllPageTypes">
+    <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
+    <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
+    <lightning:card title="Account List" iconName="standard:event">
+<!--        <aura:if isTrue="{!v.records}">-->
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-var-p-around_x-small">
+                <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col" class="accountListItem">
+                        <div class="slds-truncate" title="First Name">Name</div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <aura:iteration items="{!v.searchListFromHandleSearchListEvent}" var="item" indexVar="index">
+                    <tr
+                            style="cursor:pointer;"
+                            class="slds-text-title_caps">
+                        <td>
+                            <div class="slds-truncate" title="Name">{!item.author}</div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+                </tbody>
+            </table>
+<!--            <aura:set attribute="else">-->
+<!--                <div class="slds-m-left_large">-->
+<!--                        {!v.message}-->
+<!--                </div>-->
+<!--            </aura:set>-->
+<!--        </aura:if>-->
+    </lightning:card>
+</aura:component>

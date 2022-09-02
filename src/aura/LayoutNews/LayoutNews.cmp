@@ -1,0 +1,23 @@
+<aura:component implements="flexipage:availableForAllPageTypes,home:availableForDesktop,flexipage:availableForRecordHome,force:hasRecordId">
+    <div class="c-container">
+        <lightning:layout>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <div class="custom-box">
+                    <c:SearchNews/>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <lightning:layout>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <div class="custom-box">
+                    <c:ListSearchNews/>
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <div class="custom-box">
+                    <c:ListSearchNews/>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+</aura:component>

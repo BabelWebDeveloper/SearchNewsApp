@@ -1,18 +1,32 @@
 public with sharing class Article {
+    @AuraEnabled
     public String id;
 
+    @AuraEnabled
     public Source source;
+    @AuraEnabled
     public String author;
+    @AuraEnabled
     public String title;
+    @AuraEnabled
     public String description;
-    public String url;//external ID ?
+    @AuraEnabled
+    public String url;
+    @AuraEnabled
     public String urlToImage;
+    @AuraEnabled
     public String publishedAt;
+    @AuraEnabled
     public String content;
 
-    // przed zapisaniem w ulubionych:
+    @AuraEnabled
     public String status;
+    @AuraEnabled
     public String country;
+    @AuraEnabled
     public String category;
-    public List<Comment> comments;//declared in constructor
+    @AuraEnabled
+    public List<Comment> comments;
+
+//    metoda która będzie konwert do sObject
 }

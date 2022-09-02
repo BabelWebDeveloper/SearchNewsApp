@@ -3,9 +3,8 @@
  */
 
 public with sharing class Comment {
+    @AuraEnabled
     public String commentText;
+    @AuraEnabled
     public Integer rating;
-    public Id articleId;
-    public Id userId;
-    public String username;
 }

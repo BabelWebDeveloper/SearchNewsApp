@@ -322,11 +322,15 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="Article" />
+                            <option name="name" value="Comment" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="Comment" />
+                            <option name="name" value="NewsAppController" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="Article" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                         </list>
@@ -351,6 +355,10 @@
                           </MetadataEntry>
                           <MetadataEntry>
                             <option name="name" value="spinner" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="NewsListSearch" />
+                            <option name="selected" value="true" />
                           </MetadataEntry>
                         </list>
                       </option>
@@ -614,6 +622,22 @@
                           </MetadataEntry>
                           <MetadataEntry>
                             <option name="name" value="sendAccountToMap" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="SearchNews" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ListSearchNews" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="HandleSearchListEvent" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="LayoutNews" />
+                            <option name="selected" value="true" />
                           </MetadataEntry>
                         </list>
                       </option>
