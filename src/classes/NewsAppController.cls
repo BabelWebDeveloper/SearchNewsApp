@@ -27,12 +27,13 @@ public with sharing class NewsAppController {
 
         List<Article> mergedArticlesNotSorted = new List<Article>();
         mergedArticlesNotSorted.addAll(listExternalArticlesVerified);
-        mergedArticlesNotSorted.addAll(getInternalArticles());//tutaj rózne publishedAt
+        mergedArticlesNotSorted.addAll(getInternalArticles());
+        // todo: podwójne wartości gdy usunę z blacklisty
 
-        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
-        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
-        System.debug(' size of listExternalArticlesVerified ' + listExternalArticlesVerified.size());
-        System.debug(' size of mergedListNotSorted: ' + listExternalArticlesVerified.size());
+//        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
+//        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
+//        System.debug(' size of listExternalArticlesVerified ' + listExternalArticlesVerified.size());
+//        System.debug(' size of mergedListNotSorted: ' + listExternalArticlesVerified.size());
 
 //        mergowanie ich w jedną listę
 
@@ -91,7 +92,7 @@ public with sharing class NewsAppController {
                 if (!blacklistArticles.contains(articleNotVerified.title)) {
                     listExternalArticlesVerified.add(articleNotVerified);
                 } else {
-                    System.debug('contains: ' + articleNotVerified);
+//                    System.debug('contains: ' + articleNotVerified);
                 }
             }
         } else {
@@ -137,14 +138,14 @@ public with sharing class NewsAppController {
             builder.setAuthor(internalArticle.Author__c);
             builder.setContent(internalArticle.Content__c);
             builder.setDescription(internalArticle.Description__c);
-            builder.setPublishedAt(internalArticle.PublishedAt__c);
+            builder.setPublishedAt(internalArticle.CreatedDate);
             builder.setTitle(internalArticle.Title__c);
             builder.setUrl(internalArticle.Url__c);
             builder.setUrlToImage(internalArticle.UrlToImage__c);
             builder.setSource(internalArticle.SourceName__c);
             Article article = builder.getArticle();
             convertedArticlesToClassObject.add(article);
-            sth = internalArticle.PublishedAt__c;
+//            sth = internalArticle.PublishedAt__c;
         }
 //        System.debug(sth);
 //        String replaceStringT = '(?i)(T)';

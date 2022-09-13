@@ -31,7 +31,7 @@ public with sharing class ArticleBuilder {
         return this;
     }
 
-    public ArticleBuilder setPublishedAt(String publishedAt) {
+    public ArticleBuilder setPublishedAt(Datetime publishedAt) {
         article.publishedAt = publishedAt;
         return this;
     }

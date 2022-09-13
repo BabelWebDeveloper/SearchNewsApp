@@ -15,7 +15,7 @@ public with sharing class Article {
     @AuraEnabled
     public String urlToImage;
     @AuraEnabled
-    public String publishedAt;
+    public Datetime publishedAt;
     @AuraEnabled
     public String content;
 
