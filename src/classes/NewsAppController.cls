@@ -155,4 +155,11 @@ public with sharing class NewsAppController {
 //        System.debug(sth);
         return convertedArticlesToClassObject;
     }
+
+    @AuraEnabled
+    public static void addArticleToBlacklist(Article articleToBlacklist){
+//        todo pobrana wartość z JSa jest nullem
+        System.debug('addArticleToBlacklist work');
+        System.debug('articleToBlacklist'+articleToBlacklist);
+    }
 }

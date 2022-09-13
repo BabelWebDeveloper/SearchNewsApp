@@ -14,16 +14,4 @@
         component.set( "v.searchTimeoutId", timeoutId );
     },
 
-    getInternal : function (component, event, helper) {
-        let delayMillis = 500;
-        let timeoutId = component.get( "v.searchTimeoutId" );
-        clearTimeout( timeoutId );
-        timeoutId = setTimeout( $A.getCallback( function() {
-            console.log('controller');
-            helper.internalSearch( component );
-        }), delayMillis );
-        component.set( "v.searchTimeoutId", timeoutId );
-    }
-
-
 });

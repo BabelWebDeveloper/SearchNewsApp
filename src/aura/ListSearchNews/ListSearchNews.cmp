@@ -1,8 +1,8 @@
-<aura:component description="ListSearchNews" implements="flexipage:availableForAllPageTypes">
+<aura:component description="ListSearchNews" implements="flexipage:availableForAllPageTypes" controller="NewsAppController">
     <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
     <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
-    <aura:attribute name="articleInfo" type="String"/>
+    <aura:attribute name="selectedArticle" type="Article"/>
     <lightning:card title="News List">
         <table
                 class="slds-table
@@ -64,7 +64,7 @@
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                     <p>
                         <b>
-                            {!v.articleInfo}
+                            {!v.selectedArticle.description}
                         </b>
                     </p>
                 </div>
@@ -75,9 +75,9 @@
                                       title="Cancel"
                                       onclick="{! c.closeModel }"/>
                     <lightning:button variant="brand"
-                                      label="OK"
-                                      title="OK"
-                                      onclick="{!c.submitDetails}"/>
+                                      label="Add to blacklist"
+                                      title="Add to blacklist"
+                                      onclick="{!c.addToBlacklist}"/>
                 </footer>
             </div>
         </section>
