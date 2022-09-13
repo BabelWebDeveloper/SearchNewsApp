@@ -2,9 +2,14 @@
     <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
     <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="articleInfo" type="String"/>
     <lightning:card title="News List">
         <table
-                class=" slds-table slds-table_bordered slds-table_cell-buffer slds-var-p-around_x-small slds-max-medium-table_stacked">
+                class="slds-table
+                slds-table_bordered
+                slds-table_cell-buffer
+                slds-var-p-around_x-small
+                slds-max-medium-table_stacked">
             <thead>
             <tr class="slds-text-title_caps slds-size_medium">
                 <th scope="col" class="accountListItem">
@@ -38,7 +43,13 @@
 
     <aura:if isTrue="{!v.isModalOpen}">
         <!-- Modal/Popup Box starts here-->
-        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <section
+                role="dialog"
+                tabindex="-1"
+                aria-labelledby="modal-heading-01"
+                aria-modal="true"
+                aria-describedby="modal-content-id-1"
+                class="slds-modal slds-fade-in-open">
             <div class="slds-modal__container">
                 <!-- Modal/Popup Box Header Starts here-->
                 <header class="slds-modal__header">
@@ -51,8 +62,10 @@
                 </header>
                 <!--Modal/Popup Box Body Starts here-->
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <p><b>Modals/Popup Box are used to display content in a layer above the app. This paradigm is used in cases such as the creation or editing of a record, as well as various types of messaging and wizards.
-                    </b>
+                    <p>
+                        <b>
+                            {!v.articleInfo}
+                        </b>
                     </p>
                 </div>
                 <!--Modal/Popup Box Footer Starts here-->
