@@ -21,18 +21,22 @@ public with sharing class NewsAppController {
     public static List<Article> getArticles(String address) {
         String requestBody = address + 'ff61ef2230634d3ab71be1e01e7c2d52';
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
-//        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
         Set<String> blacklistArticles = getBlacklistArticles();
-//        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
                 blacklistArticles);
-//        System.debug(' size of listExternalArticlesVerified: ' + listExternalArticlesVerified.size());
-        List<Article> listInternalArticlesVerified = getInternalArticles();
-//        System.debug(' size of listInternalArticlesVerified: ' + listInternalArticlesVerified.size());
+
+        List<Article> mergedArticlesNotSorted = new List<Article>();
+        mergedArticlesNotSorted.addAll(listExternalArticlesVerified);
+        mergedArticlesNotSorted.addAll(getInternalArticles());//tutaj rózne publishedAt
+
+        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
+        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
+        System.debug(' size of listExternalArticlesVerified ' + listExternalArticlesVerified.size());
+        System.debug(' size of mergedListNotSorted: ' + listExternalArticlesVerified.size());
 
 //        mergowanie ich w jedną listę
 
-        return listExternalArticlesNotVerified;
+        return mergedArticlesNotSorted;
     }
 
     private static List<Article> getListExternalArticlesNotVerifiedCallout(String requestBody) {
@@ -86,6 +90,8 @@ public with sharing class NewsAppController {
             for (Article articleNotVerified : listExternalArticlesNotVerified) {
                 if (!blacklistArticles.contains(articleNotVerified.title)) {
                     listExternalArticlesVerified.add(articleNotVerified);
+                } else {
+                    System.debug('contains: ' + articleNotVerified);
                 }
             }
         } else {
@@ -140,12 +146,12 @@ public with sharing class NewsAppController {
             convertedArticlesToClassObject.add(article);
             sth = internalArticle.PublishedAt__c;
         }
-        System.debug(sth);
-        String replaceStringT = '(?i)(T)';
-        String replaceStringZ = '(?i)(Z)';
-        sth = sth.replaceFirst(replaceStringT,' ');
-        sth = sth.replaceFirst(replaceStringZ,' ');
-        System.debug(sth);
+//        System.debug(sth);
+//        String replaceStringT = '(?i)(T)';
+//        String replaceStringZ = '(?i)(Z)';
+//        sth = sth.replaceFirst(replaceStringT,' ');
+//        sth = sth.replaceFirst(replaceStringZ,' ');
+//        System.debug(sth);
         return convertedArticlesToClassObject;
     }
 }
