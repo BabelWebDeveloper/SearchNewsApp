@@ -2,24 +2,33 @@
     <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
     <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
-    <lightning:card title="News List" iconName="standard:event">
-        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-var-p-around_x-small">
+    <lightning:card title="News List">
+        <table
+                class=" slds-table slds-table_bordered slds-table_cell-buffer slds-var-p-around_x-small slds-max-medium-table_stacked">
             <thead>
-            <tr class="slds-text-title_caps">
+            <tr class="slds-text-title_caps slds-size_medium">
                 <th scope="col" class="accountListItem">
                     <div class="slds-truncate" title="First Name">Name</div>
                 </th>
             </tr>
             </thead>
             <tbody>
-            <aura:iteration items="{!v.searchListFromHandleSearchListEvent}" var="item" indexVar="index">
+            <aura:iteration
+                    items="{!v.searchListFromHandleSearchListEvent}"
+                    var="item"
+                    indexVar="index">
                 <tr
-                        style="cursor:pointer;"
-                        class="slds-text-title_caps"
+                        style="cursor:pointer;max-width:50%;"
+                        class="slds-text-title_caps slds-size_medium"
                         data-record="{!index}"
                         onclick="{!c.selectArticle}">
-                    <td>
-                        <div class="slds-truncate" title="Name">{!item.author}</div>
+                    <td class="slds-size_medium">
+                        <div
+                                class="slds-truncate slds-size_medium"
+                                title="Name"
+                                style="max-width:50%">
+                                {!item.author}
+                        </div>
                     </td>
                 </tr>
             </aura:iteration>
