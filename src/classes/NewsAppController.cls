@@ -21,8 +21,7 @@ public with sharing class NewsAppController {
     public static List<Article> getArticles(String address) {
         String requestBody = address + 'ff61ef2230634d3ab71be1e01e7c2d52';
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
-        List<Article> blacklistArticles = getBlacklistArticles();
-
+        Set<String> blacklistArticles = getBlacklistArticles();
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
                 blacklistArticles);
         return listExternalArticlesNotVerified;
@@ -52,20 +51,7 @@ public with sharing class NewsAppController {
         }
     }
 
-    public static List<Article> getBlacklistArticles() {
-//        List<Article_From_Black_List__c> blacklistArticles = [
-//                SELECT
-//                        Article_Parent__r.Author__c,
-//                        Article_Parent__r.Content__c,
-//                        Article_Parent__r.Description__c,
-//                        Article_Parent__r.PublishedAt__c,
-//                        Article_Parent__r.SourceName__c,
-//                        Article_Parent__r.Title__c,
-//                        Article_Parent__r.Url__c,
-//                        Article_Parent__r.UrlToImage__c
-//                FROM Article_From_Black_List__c
-//                WHERE CreatedById IN (SELECT Id FROM User)
-//        ];
+    public static Set<String> getBlacklistArticles() {
         List<Article_From_Black_List__c> blacklistArticles = [
                 SELECT
                         Article_Parent__r.Title__c
@@ -74,7 +60,7 @@ public with sharing class NewsAppController {
         ];
 
 
-        return convertBlacklistArticlesToClass(blacklistArticles);
+        return getBlacklistArticleTitles(blacklistArticles);
     }
 
     public static Set<String> getBlacklistArticleTitles(List<Article_From_Black_List__c> blacklistArticles) {
@@ -85,42 +71,21 @@ public with sharing class NewsAppController {
         return blacklistArticleTitles;
     }
 
-    public static List<Article> convertBlacklistArticlesToClass(List<Article_From_Black_List__c> blacklistArticles) {
-        List<Article> convertedBlacklistArticles = new List<Article>();
-        return convertedBlacklistArticles;
-    }
-
-//    public static List<Article> convertBlacklistArticlesToClass(List<Article_From_Black_List__c> blacklistArticles) {
-//        List<Article> convertedBlacklistArticles = new List<Article>();
-////        for (Article_From_Black_List__c blacklistArticle : blacklistArticles) {
-////            ArticleBuilder builder = new ArticleBuilder();
-////            builder.setAuthor(blacklistArticle.Article_Parent__r.Author__c);
-////            builder.setContent(blacklistArticle.Article_Parent__r.Content__c);
-////            builder.setDescription(blacklistArticle.Article_Parent__r.Description__c);
-////            builder.setPublishedAt(blacklistArticle.Article_Parent__r.PublishedAt__c);
-////            builder.setTitle(blacklistArticle.Article_Parent__r.Title__c);
-////            builder.setUrl(blacklistArticle.Article_Parent__r.Url__c);
-////            builder.setUrlToImage(blacklistArticle.Article_Parent__r.UrlToImage__c);
-////            builder.setSource(blacklistArticle.Article_Parent__r.SourceName__c);
-////            Article article = builder.getArticle();
-////            convertedBlacklistArticles.add(article);
-////        }
-//        return convertedBlacklistArticles;
-//    }
-
     private static List<Article> verifyListExternalArticles(List<Article> listExternalArticlesNotVerified,
-            List<Article> blacklistArticles) {
+            Set<String> blacklistArticles) {
         List<Article> listExternalArticlesVerified = new List<Article>();
         if (!blacklistArticles.isEmpty()) {
             for (Article articleNotVerified : listExternalArticlesNotVerified) {
-                if (!blacklistArticles.contains(articleNotVerified)) {
+                if (!blacklistArticles.contains(articleNotVerified.title)) {
                     listExternalArticlesVerified.add(articleNotVerified);
+                } else {
+                    System.debug('contains: ' + articleNotVerified.title);
                 }
             }
         } else {
             listExternalArticlesVerified.addAll(listExternalArticlesNotVerified);
         }
-//        System.debug('listExternalArticlesVerified: ' + listExternalArticlesVerified.size());
+        System.debug('listExternalArticlesVerified: ' + listExternalArticlesVerified.size());
         return listExternalArticlesVerified;
     }
 
@@ -155,8 +120,8 @@ public with sharing class NewsAppController {
 
     public static List<Article> sObjectToClassArticle(List<Article__c> internalArticles) {
         List<Article> convertedArticlesToClassObject = new List<Article>();
-        ArticleBuilder builder = new ArticleBuilder();
         for (Article__c internalArticle : internalArticles) {
+            ArticleBuilder builder = new ArticleBuilder();
             builder.setAuthor(internalArticle.Author__c);
             builder.setContent(internalArticle.Content__c);
             builder.setDescription(internalArticle.Description__c);
