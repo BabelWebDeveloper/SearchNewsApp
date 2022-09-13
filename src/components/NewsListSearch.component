@@ -1,6 +1,0 @@
-<!--
- - Created by przemyslaw.babel on 02.09.2022.
- -->
-
-<apex:component id="NewsListSearch">
-</apex:component>

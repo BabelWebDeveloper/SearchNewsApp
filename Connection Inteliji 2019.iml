@@ -360,10 +360,6 @@
                           <MetadataEntry>
                             <option name="name" value="spinner" />
                           </MetadataEntry>
-                          <MetadataEntry>
-                            <option name="name" value="NewsListSearch" />
-                            <option name="selected" value="true" />
-                          </MetadataEntry>
                         </list>
                       </option>
                       <option name="name" value="ApexComponent" />
