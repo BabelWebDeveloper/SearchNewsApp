@@ -21,9 +21,17 @@ public with sharing class NewsAppController {
     public static List<Article> getArticles(String address) {
         String requestBody = address + 'ff61ef2230634d3ab71be1e01e7c2d52';
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
+        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
         Set<String> blacklistArticles = getBlacklistArticles();
+        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
                 blacklistArticles);
+        System.debug(' size of listExternalArticlesVerified: ' + listExternalArticlesVerified.size());
+
+//        pobranie internal articlesów które nie należą do blacklisty
+        List<Article> listInternalArticlesVerified = getInternalArticles();
+        System.debug(' size of listInternalArticlesVerified: ' + listInternalArticlesVerified.size());
+//        mergowanie ich w jedną listę
         return listExternalArticlesNotVerified;
     }
 
@@ -78,14 +86,11 @@ public with sharing class NewsAppController {
             for (Article articleNotVerified : listExternalArticlesNotVerified) {
                 if (!blacklistArticles.contains(articleNotVerified.title)) {
                     listExternalArticlesVerified.add(articleNotVerified);
-                } else {
-                    System.debug('contains: ' + articleNotVerified.title);
                 }
             }
         } else {
             listExternalArticlesVerified.addAll(listExternalArticlesNotVerified);
         }
-        System.debug('listExternalArticlesVerified: ' + listExternalArticlesVerified.size());
         return listExternalArticlesVerified;
     }
 
