@@ -36,12 +36,6 @@
                 </div>
             </lightning:layoutItem>
 
-            <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
-                <div class="custom-box">
-                    <lightning:button variant="brand" label="Get internal" title="Brand action" onclick="{!c.getInternal}"/>
-                </div>
-            </lightning:layoutItem>
-
         </lightning:layout>
     </div>
 </aura:component>

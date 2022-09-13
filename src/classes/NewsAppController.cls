@@ -21,17 +21,17 @@ public with sharing class NewsAppController {
     public static List<Article> getArticles(String address) {
         String requestBody = address + 'ff61ef2230634d3ab71be1e01e7c2d52';
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
-        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
+//        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
         Set<String> blacklistArticles = getBlacklistArticles();
-        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
+//        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
                 blacklistArticles);
-        System.debug(' size of listExternalArticlesVerified: ' + listExternalArticlesVerified.size());
-
-//        pobranie internal articlesów które nie należą do blacklisty
+//        System.debug(' size of listExternalArticlesVerified: ' + listExternalArticlesVerified.size());
         List<Article> listInternalArticlesVerified = getInternalArticles();
-        System.debug(' size of listInternalArticlesVerified: ' + listInternalArticlesVerified.size());
+//        System.debug(' size of listInternalArticlesVerified: ' + listInternalArticlesVerified.size());
+
 //        mergowanie ich w jedną listę
+
         return listExternalArticlesNotVerified;
     }
 
@@ -94,7 +94,6 @@ public with sharing class NewsAppController {
         return listExternalArticlesVerified;
     }
 
-    @AuraEnabled
     public static List<Article> getInternalArticles() {
         List<Article__c> internalArticles = [
                 SELECT
@@ -106,7 +105,8 @@ public with sharing class NewsAppController {
                         Title__c,
                         Url__c,
                         UrlToImage__c,
-                        SourceName__c
+                        SourceName__c,
+                        CreatedDate
                 FROM Article__c
                 WHERE Id NOT IN (
                         SELECT
@@ -125,6 +125,7 @@ public with sharing class NewsAppController {
 
     public static List<Article> sObjectToClassArticle(List<Article__c> internalArticles) {
         List<Article> convertedArticlesToClassObject = new List<Article>();
+        String sth;
         for (Article__c internalArticle : internalArticles) {
             ArticleBuilder builder = new ArticleBuilder();
             builder.setAuthor(internalArticle.Author__c);
@@ -137,7 +138,14 @@ public with sharing class NewsAppController {
             builder.setSource(internalArticle.SourceName__c);
             Article article = builder.getArticle();
             convertedArticlesToClassObject.add(article);
+            sth = internalArticle.PublishedAt__c;
         }
+        System.debug(sth);
+        String replaceStringT = '(?i)(T)';
+        String replaceStringZ = '(?i)(Z)';
+        sth = sth.replaceFirst(replaceStringT,' ');
+        sth = sth.replaceFirst(replaceStringZ,' ');
+        System.debug(sth);
         return convertedArticlesToClassObject;
     }
 }
