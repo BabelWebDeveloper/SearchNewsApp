@@ -14,9 +14,9 @@
                 </div>
             </lightning:layoutItem>
             <lightning:layoutItem flexibility="auto" padding="around-small">
-                <div class="custom-box">
-                    <c:ListSearchNews/>
-                </div>
+<!--                <div class="custom-box">-->
+<!--                    <c:ListSearchNews/>-->
+<!--                </div>-->
             </lightning:layoutItem>
         </lightning:layout>
     </div>

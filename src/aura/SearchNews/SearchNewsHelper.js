@@ -27,5 +27,19 @@
             return;
         });
         $A.enqueueAction( getArticlesFromBackend );
-    }
+    },
+
+    internalSearch: function( component, searchKeyWord ) {
+        console.log('helper');
+        let getInternalArticlesFromBackend = component.get( "c.getInternalArticles" );
+
+        getInternalArticlesFromBackend.setCallback( this, function( response ) {
+            let responseInternalList = response.getReturnValue();
+            console.log(responseInternalList);
+            return;
+        });
+        $A.enqueueAction( getInternalArticlesFromBackend );
+    },
+
+
 })

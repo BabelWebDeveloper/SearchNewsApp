@@ -5,6 +5,7 @@
     <aura:registerEvent name="HandleSearchListEvent" type="c:HandleSearchListEvent"/>
     <aura:attribute name="searchKeyWord" type="String"/>
     <aura:attribute name="searchCategory" type="String"/>
+    <aura:handler name="init" action="{!c.onInit}" value="{!this}" />
     <div class="c-container">
         <lightning:layout pullToBoundary="medium"  class="slds-grid_vertical-align-end">
 
@@ -31,28 +32,13 @@
 
             <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
                 <div class="custom-box">
-                    <div class="search">
-                        <div class="search-wrapper">
-                            <form class="search-form">
-                                <div class="search-input-wrapper">
-                                    <lightning:input
-                                            label="Search"
-                                            class="search-input slds-size_medium slds-float_right"
-                                            type="text"
-                                            placeholder="BWD News Search"
-                                            value="{!v.searchCategory}"
-                                    />
-                                </div>
-                                <input type="hidden" name="language" value="en"/>
-                            </form>
-                        </div>
-                    </div>
+                    <lightning:button variant="brand" label="Search" title="Brand action" onclick="{!c.search}"/>
                 </div>
             </lightning:layoutItem>
 
             <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
                 <div class="custom-box">
-                    <lightning:button variant="brand" label="Brand" title="Brand action" onclick="{!c.search}"/>
+                    <lightning:button variant="brand" label="Get internal" title="Brand action" onclick="{!c.getInternal}"/>
                 </div>
             </lightning:layoutItem>
 

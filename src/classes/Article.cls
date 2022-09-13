@@ -27,6 +27,4 @@ public with sharing class Article {
     public String category;
     @AuraEnabled
     public List<Comment> comments;
-
-//    metoda która będzie konwert do sObject
 }

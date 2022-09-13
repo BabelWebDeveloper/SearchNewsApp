@@ -1,7 +1,7 @@
 <aura:component description="ListSearchNews" implements="flexipage:availableForAllPageTypes">
     <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
     <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
-    <lightning:card title="Account List" iconName="standard:event">
+    <lightning:card title="News List" iconName="standard:event">
 <!--        <aura:if isTrue="{!v.records}">-->
             <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-var-p-around_x-small">
                 <thead>
