@@ -6,6 +6,7 @@
     addArticleToBlacklistHelper: function( component, selectedArticle ){
         let addArticleToBlacklistBackend = component.get( "c.addArticleToBlacklist" );
 
+        let id = selectedArticle.id;
         let source = selectedArticle.source.name;
         let author = selectedArticle.author;
         let title = selectedArticle.title;
@@ -16,6 +17,7 @@
         let content = selectedArticle.content;
 
         addArticleToBlacklistBackend.setParams({
+            id: id,
             source: source,
             author: author,
             title: title,
