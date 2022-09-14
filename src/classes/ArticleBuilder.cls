@@ -7,7 +7,7 @@ public with sharing class ArticleBuilder {
     }
 
     public ArticleBuilder setId(String id) {
-        article.id = id;
+        article.idString = id;
         return this;
     }
 

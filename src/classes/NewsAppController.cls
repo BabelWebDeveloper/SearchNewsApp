@@ -25,8 +25,11 @@ public with sharing class NewsAppController {
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
         Set<String> blacklistArticlesTitles = getBlacklistArticles();
         Set<String> savedArticlesWithCommentsTitles = getSavedArticlesWithComments(listExternalArticlesNotVerified);
+
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
                 blacklistArticlesTitles, savedArticlesWithCommentsTitles);
+//        mamy teraz zweyfikowane articles bez obiektów z blacklist,
+//        przed połączeniem z internalami trzeba porównać ich tytuły i jeśli się powtarzają wybierz ten który ma Id
 
         List<Article> internalArticles = getInternalArticles(searchKeyWord, searchCategory);
 
@@ -105,8 +108,6 @@ public with sharing class NewsAppController {
         if (!blacklistArticleTitles.isEmpty()) {
             for (Article articleNotVerified : listExternalArticlesNotVerified) {
                 if (!blacklistArticleTitles.contains(articleNotVerified.title)) {
-                    System.debug('blacklist: '+blacklistArticleTitles);
-                    System.debug('articleNotVerified.title: '+articleNotVerified.title);
                     listExternalArticlesVerified.add(articleNotVerified);
                 }
             }
@@ -121,6 +122,7 @@ public with sharing class NewsAppController {
                 'SELECT ' +
                         '' +
                         'Name, ' +
+                        'Id, ' +
                         'Author__c, ' +
                         'Content__c, ' +
                         'Description__c, ' +
@@ -141,6 +143,8 @@ public with sharing class NewsAppController {
                         '   Id ' +
                         'FROM User )';
         List<Article__c> internalArticles = Database.query(query);
+        System.debug(internalArticles);
+
         List<Article> convertedArticlesToClassObject = sObjectToClassArticle(internalArticles);
 
         return filterArticles(convertedArticlesToClassObject,
@@ -207,9 +211,9 @@ public with sharing class NewsAppController {
         Article__c article = builder.getArticle();
         insert article;
 
-        Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
-        articleToBlackList.Article_Parent__c = article.Id;
-        insert articleToBlackList;
+//        Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
+//        articleToBlackList.Article_Parent__c = article.Id;
+//        insert articleToBlackList;
     }
 
     private static Set<String> getSavedArticlesWithComments(List<Article> listExternalArticlesNotVerified){

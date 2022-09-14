@@ -1,6 +1,6 @@
 public with sharing class Article {
     @AuraEnabled
-    public String id;
+    public String idString;
     @AuraEnabled
     public Source source;
     @AuraEnabled
