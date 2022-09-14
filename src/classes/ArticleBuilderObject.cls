@@ -2,7 +2,7 @@ public with sharing class ArticleBuilderObject {
     private final Article__c article;
 
     public ArticleBuilderObject() {
-        article = new Article();
+        article = new Article__c();
     }
 
     public ArticleBuilderObject setAuthor(String author) {
@@ -30,10 +30,10 @@ public with sharing class ArticleBuilderObject {
         return this;
     }
 
-//    public ArticleBuilderObject setPublishedAt(Datetime publishedAt) {
-//        article.PublishedAt__c = publishedAt;
-//        return this;
-//    }
+    public ArticleBuilderObject setPublishedAt(Datetime publishedAt) {
+        article.PublishedAt__c = publishedAt;
+        return this;
+    }
 
     public ArticleBuilderObject setContent(String content) {
         article.Content__c = content;
@@ -51,7 +51,7 @@ public with sharing class ArticleBuilderObject {
         return this;
     }
 
-    public Article getArticle() {
+    public Article__c getArticle() {
         return article;
     }
 }

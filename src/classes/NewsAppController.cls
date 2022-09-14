@@ -201,7 +201,7 @@ public with sharing class NewsAppController {
             Datetime publishedAt,
             String content){
 //        todo pobrana wartość z JSa jest nullem, trzeba przekazać pojedyńcze parametry jako string...
-        ArticleBuilder builder = new ArticleBuilder();
+        ArticleBuilderObject builder = new ArticleBuilderObject();
         builder.setAuthor(author);
         builder.setContent(content);
         builder.setDescription(description);
@@ -210,8 +210,9 @@ public with sharing class NewsAppController {
         builder.setUrl(url);
         builder.setUrlToImage(urlToImage);
         builder.setSource(source);
-        Article article = builder.getArticle();
+        Article__c article = builder.getArticle();
 // kurwa głupi dałnie insertujesz article__c a nie article .....
         insert article;
+        System.debug(article.Id);
     }
 }
