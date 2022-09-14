@@ -27,9 +27,11 @@ public with sharing class NewsAppController {
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
                 blacklistArticles);
 
+        List<Article> internalArticles = getInternalArticles(searchKeyWord, searchCategory);
+
         List<Article> mergedArticlesNotSorted = new List<Article>();
         mergedArticlesNotSorted.addAll(listExternalArticlesVerified);
-        mergedArticlesNotSorted.addAll(getInternalArticles());
+        mergedArticlesNotSorted.addAll(internalArticles);
         // todo: podwójne wartości gdy usunę z blacklisty
 
 //        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
@@ -103,11 +105,11 @@ public with sharing class NewsAppController {
     }
 
     private static List<Article> verifyListExternalArticles(List<Article> listExternalArticlesNotVerified,
-            Set<String> blacklistArticles) {
+            Set<String> blacklistArticleTitles) {
         List<Article> listExternalArticlesVerified = new List<Article>();
-        if (!blacklistArticles.isEmpty()) {
+        if (!blacklistArticleTitles.isEmpty()) {
             for (Article articleNotVerified : listExternalArticlesNotVerified) {
-                if (!blacklistArticles.contains(articleNotVerified.title)) {
+                if (!blacklistArticleTitles.contains(articleNotVerified.title)) {
                     listExternalArticlesVerified.add(articleNotVerified);
                 } else {
 //                    System.debug('contains: ' + articleNotVerified);
@@ -119,34 +121,53 @@ public with sharing class NewsAppController {
         return listExternalArticlesVerified;
     }
 
-    public static List<Article> getInternalArticles() {
+    private static List<Article> getInternalArticles(String searchKeyWord, String searchCategory) {
 //        todo wyszukiwarka wewnętrzna nie działa na wpisany tekst - wyszukuje wszystko, trzeba zrobić duże query wyszukujące słowo kluczowe wszędzie
-        List<Article__c> internalArticles = [
-                SELECT
-                        Name,
-                        Author__c,
-                        Content__c,
-                        Description__c,
-                        PublishedAt__c,
-                        Title__c,
-                        Url__c,
-                        UrlToImage__c,
-                        SourceName__c,
-                        CreatedDate
-                FROM Article__c
-                WHERE Id NOT IN (
-                        SELECT
-                                Article_Parent__c
-                        FROM Article_From_Black_List__c
-                )
-                AND OwnerId IN (
-                        SELECT
-                                Id
-                        FROM User
-                )
-        ];
+        String query =
+                'SELECT ' +
+                        '' +
+                        'Name, ' +
+                        'Author__c, ' +
+                        'Content__c, ' +
+                        'Description__c, ' +
+                        'PublishedAt__c, ' +
+                        'Title__c, ' +
+                        'Url__c, ' +
+                        'UrlToImage__c, ' +
+                        'SourceName__c, ' +
+                        'CreatedDate, ' +
+                        'Category__c ' +
+                        'FROM Article__c ' +
+                        'WHERE Id NOT IN ( ' +
+                        'SELECT ' +
+                            'Article_Parent__c ' +
+                        'FROM Article_From_Black_List__c ) ' +
+                        'AND OwnerId IN ( ' +
+                        'SELECT ' +
+                        '   Id ' +
+                        'FROM User )';
+        List<Article__c> internalArticles = Database.query(query);
         List<Article> convertedArticlesToClassObject = sObjectToClassArticle(internalArticles);
-        return convertedArticlesToClassObject;
+
+        return filterArticles(convertedArticlesToClassObject,
+                searchKeyWord, searchCategory);
+    }
+
+    private static List<Article> filterArticles(List<Article> convertedArticlesToClassObject,
+            String searchKeyWord, String searchCategory){
+        List<Article> filteredArticles = new List<Article>();
+
+        if (searchKeyWord != 'undefined' || searchKeyWord != '' || searchKeyWord != null ||
+                searchCategory != 'undefined' || searchCategory != '' || searchCategory != null) {
+            for (Article article : convertedArticlesToClassObject){
+                if ((article.title.contains(searchKeyWord) || article.description.contains(searchKeyWord) ||
+                        article.content.contains(searchKeyWord)) && article.category == searchCategory) {
+                    filteredArticles.add(article);
+                }
+            }
+        }
+
+        return filteredArticles;
     }
 
     public static List<Article> sObjectToClassArticle(List<Article__c> internalArticles) {
@@ -162,16 +183,10 @@ public with sharing class NewsAppController {
             builder.setUrl(internalArticle.Url__c);
             builder.setUrlToImage(internalArticle.UrlToImage__c);
             builder.setSource(internalArticle.SourceName__c);
+            builder.setCategory(internalArticle.Category__c);
             Article article = builder.getArticle();
             convertedArticlesToClassObject.add(article);
-//            sth = internalArticle.PublishedAt__c;
         }
-//        System.debug(sth);
-//        String replaceStringT = '(?i)(T)';
-//        String replaceStringZ = '(?i)(Z)';
-//        sth = sth.replaceFirst(replaceStringT,' ');
-//        sth = sth.replaceFirst(replaceStringZ,' ');
-//        System.debug(sth);
         return convertedArticlesToClassObject;
     }
 

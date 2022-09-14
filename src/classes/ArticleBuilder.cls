@@ -41,6 +41,12 @@ public with sharing class ArticleBuilder {
         return this;
     }
 
+    public ArticleBuilder setCategory(String category) {
+        article.category = category;
+        return this;
+    }
+
+
     public ArticleBuilder setSource(String sourceName) {
         source = new Source();
         source.name = sourceName;

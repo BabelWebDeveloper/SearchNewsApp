@@ -29,10 +29,10 @@
                         onclick="{!c.selectArticle}">
                     <td class="slds-size_medium">
                         <div
-                                class="slds-truncate slds-size_medium"
+                                class="slds-truncate"
                                 title="Name"
                                 style="max-width:50%">
-                                {!item.author}
+                                {!item.title}
                         </div>
                     </td>
                 </tr>
