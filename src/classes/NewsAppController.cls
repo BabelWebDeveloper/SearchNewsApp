@@ -11,6 +11,8 @@ public with sharing class NewsAppController {
 
     public List<Article> blacklistArticles;
 
+    public Article__c objectArticle;
+
     public NewsAppController() {
         article = new Article();
         blacklistArticles = new List<Article>();
@@ -22,18 +24,22 @@ public with sharing class NewsAppController {
         String requestBody = createRequestBody(searchKeyWord, searchCategory);
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
         Set<String> blacklistArticlesTitles = getBlacklistArticles();
+        Set<String> savedArticlesWithCommentsTitles = getSavedArticlesWithComments(listExternalArticlesNotVerified);
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
-                blacklistArticlesTitles);
+                blacklistArticlesTitles, savedArticlesWithCommentsTitles);
+
         List<Article> internalArticles = getInternalArticles(searchKeyWord, searchCategory);
 
-        List<Article> mergedArticles = new List<Article>();
-        mergedArticles.addAll(internalArticles);
-        mergedArticles.addAll(listExternalArticlesVerified);
+        List<Article> mergedArticlesNotSorted = new List<Article>();
+        mergedArticlesNotSorted.addAll(internalArticles);
+//        System.debug('internalArticles: '+internalArticles);
+        mergedArticlesNotSorted.addAll(listExternalArticlesVerified);
 
-        return mergedArticles;
+        // todo: podwójne wartości gdy usunę z blacklisty
+        return mergedArticlesNotSorted;
     }
 
-    private static String createRequestBody(String searchKeyWord, String searchCategory) {
+    private static String createRequestBody(String searchKeyWord, String searchCategory){
         String requestBody = 'https://newsapi.org/v2/top-headlines?q=';
         String address2 = '&country=us&category=business&apiKey=';
         if (searchKeyWord == 'undefined' || searchKeyWord == '' || searchKeyWord == null) {
@@ -73,31 +79,34 @@ public with sharing class NewsAppController {
         }
     }
 
-    private static Set<String> getBlacklistArticles() {
-        List<Article__c> blacklistArticles = [
-                SELECT Name, Description__c, OwnerId, Title__c
-                FROM Article__c
-                WHERE OwnerId IN (SELECT Id FROM User)
-                AND Id NOT IN (SELECT Article_Parent__c FROM Article_From_White_List__c)
+    public static Set<String> getBlacklistArticles() {//tutaj bierzesz artykułu z blacklisty oraz te zapisane które jednocześnie nie należą do whitelist
+        List<Article_From_Black_List__c> blacklistArticles = [
+                SELECT
+                        Article_Parent__r.Title__c
+                FROM Article_From_Black_List__c
+                WHERE CreatedById IN (SELECT Id FROM User)
         ];
+
 
         return getBlacklistArticleTitles(blacklistArticles);
     }
 
-    private static Set<String> getBlacklistArticleTitles(List<Article__c> blacklistArticles) {
+    public static Set<String> getBlacklistArticleTitles(List<Article_From_Black_List__c> blacklistArticles) {
         Set<String> blacklistArticleTitles = new Set<String>();
-        for (Article__c blacklistArticle : blacklistArticles) {
-            blacklistArticleTitles.add(blacklistArticle.Title__c);
+        for (Article_From_Black_List__c blacklistArticle : blacklistArticles) {
+            blacklistArticleTitles.add(blacklistArticle.Article_Parent__r.Title__c);
         }
         return blacklistArticleTitles;
     }
 
     private static List<Article> verifyListExternalArticles(List<Article> listExternalArticlesNotVerified,
-            Set<String> blacklistArticleTitles) {
+            Set<String> blacklistArticleTitles, Set<String> savedArticlesWithCommentsTitles) {
         List<Article> listExternalArticlesVerified = new List<Article>();
         if (!blacklistArticleTitles.isEmpty()) {
             for (Article articleNotVerified : listExternalArticlesNotVerified) {
                 if (!blacklistArticleTitles.contains(articleNotVerified.title)) {
+                    System.debug('blacklist: '+blacklistArticleTitles);
+                    System.debug('articleNotVerified.title: '+articleNotVerified.title);
                     listExternalArticlesVerified.add(articleNotVerified);
                 }
             }
@@ -125,7 +134,7 @@ public with sharing class NewsAppController {
                         'FROM Article__c ' +
                         'WHERE Id NOT IN ( ' +
                         'SELECT ' +
-                        'Article_Parent__c ' +
+                            'Article_Parent__c ' +
                         'FROM Article_From_Black_List__c ) ' +
                         'AND OwnerId IN ( ' +
                         'SELECT ' +
@@ -139,12 +148,12 @@ public with sharing class NewsAppController {
     }
 
     private static List<Article> filterArticles(List<Article> convertedArticlesToClassObject,
-            String searchKeyWord, String searchCategory) {
+            String searchKeyWord, String searchCategory){
         List<Article> filteredArticles = new List<Article>();
 
         if (searchKeyWord != 'undefined' || searchKeyWord != '' || searchKeyWord != null ||
                 searchCategory != 'undefined' || searchCategory != '' || searchCategory != null) {
-            for (Article article : convertedArticlesToClassObject) {
+            for (Article article : convertedArticlesToClassObject){
                 if ((article.title.contains(searchKeyWord) || article.description.contains(searchKeyWord) ||
                         article.content.contains(searchKeyWord)) && article.category == searchCategory) {
                     filteredArticles.add(article);
@@ -155,7 +164,7 @@ public with sharing class NewsAppController {
         return filteredArticles;
     }
 
-    private static List<Article> sObjectToClassArticle(List<Article__c> internalArticles) {
+    public static List<Article> sObjectToClassArticle(List<Article__c> internalArticles) {
         List<Article> convertedArticlesToClassObject = new List<Article>();
         String sth;
         for (Article__c internalArticle : internalArticles) {
@@ -173,13 +182,11 @@ public with sharing class NewsAppController {
             Article article = builder.getArticle();
             convertedArticlesToClassObject.add(article);
         }
-
         return convertedArticlesToClassObject;
     }
 
     @AuraEnabled
     public static void addArticleToBlacklist(
-            String id,
             String source,
             String author,
             String title,
@@ -187,37 +194,29 @@ public with sharing class NewsAppController {
             String url,
             String urlToImage,
             Datetime publishedAt,
-            String content) {
-        if (id == 'undefined' || id == '' || id == null) {
-            ArticleBuilderObject builder = new ArticleBuilderObject();
-            builder.setAuthor(author);
-            builder.setContent(content);
-            builder.setDescription(description);
-            builder.setPublishedAt(publishedAt);
-            builder.setTitle(title);
-            builder.setUrl(url);
-            builder.setUrlToImage(urlToImage);
-            builder.setSource(source);
-            Article__c article = builder.getArticle();
-            insert article;
+            String content){
+        ArticleBuilderObject builder = new ArticleBuilderObject();
+        builder.setAuthor(author);
+        builder.setContent(content);
+        builder.setDescription(description);
+        builder.setPublishedAt(publishedAt);
+        builder.setTitle(title);
+        builder.setUrl(url);
+        builder.setUrlToImage(urlToImage);
+        builder.setSource(source);
+        Article__c article = builder.getArticle();
+        insert article;
 
-            Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
-            articleToBlackList.Article_Parent__c = article.Id;
-            insert articleToBlackList;
-        } else {
-            Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
-            articleToBlackList.Article_Parent__c = id;
-            insert articleToBlackList;
-        }
-
+        Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
+        articleToBlackList.Article_Parent__c = article.Id;
+        insert articleToBlackList;
     }
 
-    private static Set<String> getExternalArticlesVerifiedTitles(List<Article> listExternalArticlesVerified) {
+    private static Set<String> getSavedArticlesWithComments(List<Article> listExternalArticlesNotVerified){
         Set<String> externalArticlesVerifiedTitles = new Set<String>();
-        for (Article externalArticleVerified : listExternalArticlesVerified) {
+        for (Article externalArticleVerified : listExternalArticlesNotVerified) {
             externalArticlesVerifiedTitles.add(externalArticleVerified.title);
         }
-
         return externalArticlesVerifiedTitles;
     }
 }
