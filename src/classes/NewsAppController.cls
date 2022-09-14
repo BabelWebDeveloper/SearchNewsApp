@@ -29,18 +29,14 @@ public with sharing class NewsAppController {
 
         List<Article> internalArticles = getInternalArticles(searchKeyWord, searchCategory);
 
+//        tutaj musi być porównanie z internalem jeśli są takie same tytuły wtedy pierwszeństwo ma internal !!!
+//        po symulacji (czyli dodaniu artykułu przez blacklist) pojawiają się dwa takie same artykuły, trzeba zrobić weryfikacje i zostawić ten który ma id
+//        zrobić sety tutułów i jeśli jakiś tytuł zawiera się dwa razy wtedy zostawić ten który ma id
         List<Article> mergedArticlesNotSorted = new List<Article>();
         mergedArticlesNotSorted.addAll(listExternalArticlesVerified);
         mergedArticlesNotSorted.addAll(internalArticles);
+        System.debug('listExternalArticlesVerified: '+internalArticles);
         // todo: podwójne wartości gdy usunę z blacklisty
-
-//        System.debug(' size of listExternalArticlesNotVerified: ' + listExternalArticlesNotVerified.size());
-//        System.debug(' size of blacklistArticles: ' + blacklistArticles.size());
-//        System.debug(' size of listExternalArticlesVerified ' + listExternalArticlesVerified.size());
-//        System.debug(' size of mergedListNotSorted: ' + listExternalArticlesVerified.size());
-
-//        mergowanie ich w jedną listę
-
         return mergedArticlesNotSorted;
     }
 
@@ -175,6 +171,7 @@ public with sharing class NewsAppController {
         String sth;
         for (Article__c internalArticle : internalArticles) {
             ArticleBuilder builder = new ArticleBuilder();
+            builder.setId(internalArticle.Id);
             builder.setAuthor(internalArticle.Author__c);
             builder.setContent(internalArticle.Content__c);
             builder.setDescription(internalArticle.Description__c);
@@ -200,7 +197,6 @@ public with sharing class NewsAppController {
             String urlToImage,
             Datetime publishedAt,
             String content){
-//        todo pobrana wartość z JSa jest nullem, trzeba przekazać pojedyńcze parametry jako string...
         ArticleBuilderObject builder = new ArticleBuilderObject();
         builder.setAuthor(author);
         builder.setContent(content);
@@ -211,8 +207,10 @@ public with sharing class NewsAppController {
         builder.setUrlToImage(urlToImage);
         builder.setSource(source);
         Article__c article = builder.getArticle();
-// kurwa głupi dałnie insertujesz article__c a nie article .....
         insert article;
-        System.debug(article.Id);
+
+//        Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
+//        articleToBlackList.Article_Parent__c = article.Id;
+//        insert articleToBlackList;
     }
 }

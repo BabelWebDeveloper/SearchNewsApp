@@ -6,6 +6,11 @@ public with sharing class ArticleBuilder {
         article = new Article();
     }
 
+    public ArticleBuilder setId(String id) {
+        article.id = id;
+        return this;
+    }
+
     public ArticleBuilder setAuthor(String author) {
         article.author = author;
         return this;

@@ -7,7 +7,6 @@
     selectArticle : function(component, event, helper){
         let target = component.get("v.searchListFromHandleSearchListEvent")[event.currentTarget.dataset.record],
         selectedArticle = JSON.stringify(target);
-        console.log(target);
         component.set("v.isModalOpen", true);
         component.set("v.selectedArticle", target);
     },
