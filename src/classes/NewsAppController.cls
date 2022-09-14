@@ -23,19 +23,18 @@ public with sharing class NewsAppController {
     public static List<Article> getArticles(String searchKeyWord, String searchCategory) {
         String requestBody = createRequestBody(searchKeyWord, searchCategory);
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
-        Set<String> blacklistArticles = getBlacklistArticles();
+        Set<String> blacklistArticlesTitles = getBlacklistArticles();
+//        Set<String> savedArticlesWithCommentsTitles = getSavedArticlesWithComments();
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
-                blacklistArticles);
+                blacklistArticlesTitles);//to powinno być załatwione na tym etapie, podajesz też listę artykułów która nie należy ani do blacklisty ani do whitelisty
 
         List<Article> internalArticles = getInternalArticles(searchKeyWord, searchCategory);
 
-//        tutaj musi być porównanie z internalem jeśli są takie same tytuły wtedy pierwszeństwo ma internal !!!
-//        po symulacji (czyli dodaniu artykułu przez blacklist) pojawiają się dwa takie same artykuły, trzeba zrobić weryfikacje i zostawić ten który ma id
-//        zrobić sety tutułów i jeśli jakiś tytuł zawiera się dwa razy wtedy zostawić ten który ma id
         List<Article> mergedArticlesNotSorted = new List<Article>();
-        mergedArticlesNotSorted.addAll(listExternalArticlesVerified);
         mergedArticlesNotSorted.addAll(internalArticles);
-        System.debug('listExternalArticlesVerified: '+internalArticles);
+        System.debug('internalArticles: '+internalArticles);
+        mergedArticlesNotSorted.addAll(listExternalArticlesVerified);
+
         // todo: podwójne wartości gdy usunę z blacklisty
         return mergedArticlesNotSorted;
     }
@@ -80,22 +79,22 @@ public with sharing class NewsAppController {
         }
     }
 
-    public static Set<String> getBlacklistArticles() {
-        List<Article_From_Black_List__c> blacklistArticles = [
-                SELECT
-                        Article_Parent__r.Title__c
-                FROM Article_From_Black_List__c
-                WHERE CreatedById IN (SELECT Id FROM User)
+    private static Set<String> getBlacklistArticles() {//tutaj bierzesz artykułu z blacklisty oraz te zapisane które jednocześnie nie należą do whitelist
+        List<Article__c> blacklistArticles = [
+                SELECT Name, Description__c, OwnerId, Title__c
+                FROM Article__c
+                WHERE OwnerId IN (SELECT Id FROM User)
+                AND Id NOT IN (SELECT Article_Parent__c FROM Article_From_White_List__c)
         ];
 
 
         return getBlacklistArticleTitles(blacklistArticles);
     }
 
-    public static Set<String> getBlacklistArticleTitles(List<Article_From_Black_List__c> blacklistArticles) {
+    private static Set<String> getBlacklistArticleTitles(List<Article__c> blacklistArticles) {
         Set<String> blacklistArticleTitles = new Set<String>();
-        for (Article_From_Black_List__c blacklistArticle : blacklistArticles) {
-            blacklistArticleTitles.add(blacklistArticle.Article_Parent__r.Title__c);
+        for (Article__c blacklistArticle : blacklistArticles) {
+            blacklistArticleTitles.add(blacklistArticle.Title__c);
         }
         return blacklistArticleTitles;
     }
@@ -107,8 +106,6 @@ public with sharing class NewsAppController {
             for (Article articleNotVerified : listExternalArticlesNotVerified) {
                 if (!blacklistArticleTitles.contains(articleNotVerified.title)) {
                     listExternalArticlesVerified.add(articleNotVerified);
-                } else {
-//                    System.debug('contains: ' + articleNotVerified);
                 }
             }
         } else {
@@ -118,7 +115,6 @@ public with sharing class NewsAppController {
     }
 
     private static List<Article> getInternalArticles(String searchKeyWord, String searchCategory) {
-//        todo wyszukiwarka wewnętrzna nie działa na wpisany tekst - wyszukuje wszystko, trzeba zrobić duże query wyszukujące słowo kluczowe wszędzie
         String query =
                 'SELECT ' +
                         '' +
@@ -209,8 +205,16 @@ public with sharing class NewsAppController {
         Article__c article = builder.getArticle();
         insert article;
 
-//        Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
-//        articleToBlackList.Article_Parent__c = article.Id;
-//        insert articleToBlackList;
+        Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
+        articleToBlackList.Article_Parent__c = article.Id;
+        insert articleToBlackList;
+    }
+
+    private static Set<String> getExternalArticlesVerifiedTitles(List<Article> listExternalArticlesVerified){
+        Set<String> externalArticlesVerifiedTitles = new Set<String>();
+        for (Article externalArticleVerified : listExternalArticlesVerified) {
+            externalArticlesVerifiedTitles.add(externalArticleVerified.title);
+        }
+        return externalArticlesVerifiedTitles;
     }
 }
