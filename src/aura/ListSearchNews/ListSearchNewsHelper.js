@@ -5,8 +5,25 @@
     },
     addArticleToBlacklistHelper: function( component, selectedArticle ){
         let addArticleToBlacklistBackend = component.get( "c.addArticleToBlacklist" );
+
+        let source = selectedArticle.source.name;
+        let author = selectedArticle.author;
+        let title = selectedArticle.title;
+        let description = selectedArticle.description;
+        let url = selectedArticle.url;
+        let urlToImage = selectedArticle.urlToImage;
+        let publishedAt = selectedArticle.publishedAt;
+        let content = selectedArticle.content;
+
         addArticleToBlacklistBackend.setParams({
-            selectedArticle: selectedArticle
+            source: source,
+            author: author,
+            title: title,
+            description: description,
+            url: url,
+            urlToImage: urlToImage,
+            publishedAt: publishedAt,
+            content: content
         });
 
         addArticleToBlacklistBackend.setCallback( this, function( response ) {

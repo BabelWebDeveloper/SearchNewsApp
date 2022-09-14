@@ -191,9 +191,27 @@ public with sharing class NewsAppController {
     }
 
     @AuraEnabled
-    public static void addArticleToBlacklist(Object articleToBlacklist){
+    public static void addArticleToBlacklist(
+            String source,
+            String author,
+            String title,
+            String description,
+            String url,
+            String urlToImage,
+            Datetime publishedAt,
+            String content){
 //        todo pobrana wartość z JSa jest nullem, trzeba przekazać pojedyńcze parametry jako string...
-        System.debug('addArticleToBlacklist work');
-        System.debug('articleToBlacklist: '+articleToBlacklist);
+        ArticleBuilder builder = new ArticleBuilder();
+        builder.setAuthor(author);
+        builder.setContent(content);
+        builder.setDescription(description);
+        builder.setPublishedAt(publishedAt);
+        builder.setTitle(title);
+        builder.setUrl(url);
+        builder.setUrlToImage(urlToImage);
+        builder.setSource(source);
+        Article article = builder.getArticle();
+// kurwa głupi dałnie insertujesz article__c a nie article .....
+        insert article;
     }
 }
