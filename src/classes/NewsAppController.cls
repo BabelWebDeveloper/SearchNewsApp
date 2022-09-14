@@ -11,6 +11,8 @@ public with sharing class NewsAppController {
 
     public List<Article> blacklistArticles;
 
+    public Article__c objectArticle;
+
     public NewsAppController() {
         article = new Article();
         blacklistArticles = new List<Article>();
@@ -18,8 +20,8 @@ public with sharing class NewsAppController {
     }
 
     @AuraEnabled
-    public static List<Article> getArticles(String address) {
-        String requestBody = address + 'ff61ef2230634d3ab71be1e01e7c2d52';
+    public static List<Article> getArticles(String searchKeyWord, String searchCategory) {
+        String requestBody = createRequestBody(searchKeyWord, searchCategory);
         List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
         Set<String> blacklistArticles = getBlacklistArticles();
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
@@ -38,6 +40,22 @@ public with sharing class NewsAppController {
 //        mergowanie ich w jedną listę
 
         return mergedArticlesNotSorted;
+    }
+
+    private static String createRequestBody(String searchKeyWord, String searchCategory){
+        String requestBody = 'https://newsapi.org/v2/top-headlines?q=';
+        String address2 = '&country=us&category=business&apiKey=';
+        if (searchKeyWord == 'undefined' || searchKeyWord == '' || searchKeyWord == null) {
+            requestBody += '&country=us&category=';
+        } else {
+            requestBody += searchKeyWord + '&country=us&category=';
+        }
+        if (searchCategory != 'undefined' || searchCategory != '' || searchCategory != null) {
+            requestBody += searchCategory;
+        }
+        String api = 'ff61ef2230634d3ab71be1e01e7c2d52';
+        requestBody += '&apiKey=' + api;
+        return requestBody;
     }
 
     private static List<Article> getListExternalArticlesNotVerifiedCallout(String requestBody) {
@@ -102,6 +120,7 @@ public with sharing class NewsAppController {
     }
 
     public static List<Article> getInternalArticles() {
+//        todo wyszukiwarka wewnętrzna nie działa na wpisany tekst - wyszukuje wszystko, trzeba zrobić duże query wyszukujące słowo kluczowe wszędzie
         List<Article__c> internalArticles = [
                 SELECT
                         Name,
@@ -157,9 +176,9 @@ public with sharing class NewsAppController {
     }
 
     @AuraEnabled
-    public static void addArticleToBlacklist(Article articleToBlacklist){
-//        todo pobrana wartość z JSa jest nullem
+    public static void addArticleToBlacklist(Object articleToBlacklist){
+//        todo pobrana wartość z JSa jest nullem, trzeba przekazać pojedyńcze parametry jako string...
         System.debug('addArticleToBlacklist work');
-        System.debug('articleToBlacklist'+articleToBlacklist);
+        System.debug('articleToBlacklist: '+articleToBlacklist);
     }
 }

@@ -9,7 +9,7 @@
         let timeoutId = component.get( "v.searchTimeoutId" );
         clearTimeout( timeoutId );
         timeoutId = setTimeout( $A.getCallback( function() {
-            helper.handleSearch( component, searchKeyWord );
+            helper.handleSearch( component, searchKeyWord, searchCategory );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
     },
