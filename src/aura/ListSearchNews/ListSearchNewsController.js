@@ -28,6 +28,7 @@
     closeModel: function(component, event, helper) {
         component.set("v.isModalOpen", false);
         component.set( "v.newComment", '' );
+        component.set( "v.showApproveForComment", true );
     },
     addToBlacklist: function(component, event, helper) {
         let selectedArticle = component.get("v.selectedArticle");
@@ -53,5 +54,6 @@
             helper.saveCommentHelper( component, comment, selectedArticle );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
+        component.set( "v.showApproveForComment", false );
     }
 })

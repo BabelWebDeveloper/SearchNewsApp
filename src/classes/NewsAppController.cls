@@ -33,7 +33,6 @@ public with sharing class NewsAppController {
         List<Article> mergedArticles = mergeArticlesAndRemoveDuplicatesKeepRecordsWithId(internalArticles,
                 listExternalArticlesVerified, internalArticlesTitles);
 
-        // todo: musi być wpisywana domyślna wartość do pola category inaczej nie będzie id
         return mergedArticles;
     }
 
@@ -61,7 +60,7 @@ public with sharing class NewsAppController {
 
             request.setEndpoint(requestBody);
             request.setMethod('GET');
-            response = myHttp.send(request);
+//            response = myHttp.send(request);
 
             String jsonString = response.getBody();
             Integer statusCode = response.getStatusCode();
@@ -203,7 +202,6 @@ public with sharing class NewsAppController {
             List<Article> listExternalArticlesVerified, Set<String> internalArticlesTitles){
         List<Article> mergedListOfArticles = new List<Article>();
 
-//        todo duplikaty w internalach
         mergedListOfArticles.addAll(internalArticles);
         if (!listExternalArticlesVerified.isEmpty()) {
             for (Article externalArticleVerified : listExternalArticlesVerified){
