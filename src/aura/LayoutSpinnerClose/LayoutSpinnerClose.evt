@@ -1,0 +1,7 @@
+<!--
+ - Created by przemyslaw.babel on 15.09.2022.
+ -->
+
+<aura:event type="APPLICATION" description="LayoutSpinnerClose">
+    <aura:attribute name="afterSearchSpinner" type="Boolean" default="false"/>
+</aura:event>

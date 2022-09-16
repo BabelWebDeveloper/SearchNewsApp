@@ -22,13 +22,11 @@ public with sharing class NewsAppController {
     @AuraEnabled
     public static List<Article> getArticles(String searchKeyWord, String searchCategory) {
         String requestBody = createRequestBody(searchKeyWord, searchCategory);
-        List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);
+        List<Article> listExternalArticlesNotVerified = getListExternalArticlesNotVerifiedCallout(requestBody);//git
         Set<String> blacklistArticlesTitles = getBlacklistArticles();
 
         List<Article> listExternalArticlesVerified = verifyListExternalArticles(listExternalArticlesNotVerified,
                 blacklistArticlesTitles);
-//        mamy teraz zweyfikowane articles bez obiektów z blacklist,
-//        przed połączeniem z internalami trzeba porównać ich tytuły i jeśli się powtarzają wybierz ten który ma Id
         List<Article> internalArticles = getInternalArticles(searchKeyWord, searchCategory);
 
         Set<String> internalArticlesTitles = getInternalArticlesTitles(internalArticles);
@@ -79,7 +77,7 @@ public with sharing class NewsAppController {
         }
     }
 
-    private static Set<String> getBlacklistArticles() {//tutaj bierzesz artykułu z blacklisty oraz te zapisane które jednocześnie nie należą do whitelist
+    private static Set<String> getBlacklistArticles() {
         List<Article_From_Black_List__c> blacklistArticles = [
                 SELECT
                         Article_Parent__r.Title__c
@@ -101,16 +99,25 @@ public with sharing class NewsAppController {
 
     private static List<Article> verifyListExternalArticles(List<Article> listExternalArticlesNotVerified,
             Set<String> blacklistArticleTitles) {
+
         List<Article> listExternalArticlesVerified = new List<Article>();
-        if (!blacklistArticleTitles.isEmpty()) {
-            for (Article articleNotVerified : listExternalArticlesNotVerified) {
-                if (!blacklistArticleTitles.contains(articleNotVerified.title)) {
-                    listExternalArticlesVerified.add(articleNotVerified);
+        try {
+            if (!listExternalArticlesNotVerified.isEmpty()) {
+                if (!blacklistArticleTitles.isEmpty()) {
+                    for (Article articleNotVerified : listExternalArticlesNotVerified) {
+                        if (!blacklistArticleTitles.contains(articleNotVerified.title)) {
+                            listExternalArticlesVerified.add(articleNotVerified);
+                        }
+                    }
+                } else {
+                    listExternalArticlesVerified.addAll(listExternalArticlesNotVerified);
                 }
             }
-        } else {
-            listExternalArticlesVerified.addAll(listExternalArticlesNotVerified);
+        } catch (Exception e){
+            System.debug(e);
         }
+
+
         return listExternalArticlesVerified;
     }
 
@@ -140,7 +147,6 @@ public with sharing class NewsAppController {
                         '   Id ' +
                         'FROM User )';
         List<Article__c> internalArticles = Database.query(query);
-        System.debug(internalArticles);
 
         List<Article> convertedArticlesToClassObject = sObjectToClassArticle(internalArticles);
 
@@ -150,7 +156,6 @@ public with sharing class NewsAppController {
 
     private static List<Article> sObjectToClassArticle(List<Article__c> internalArticles) {
         List<Article> convertedArticlesToClassObject = new List<Article>();
-        String sth;
         for (Article__c internalArticle : internalArticles) {
             ArticleBuilder builder = new ArticleBuilder();
             builder.setId(internalArticle.Id);
@@ -198,10 +203,13 @@ public with sharing class NewsAppController {
             List<Article> listExternalArticlesVerified, Set<String> internalArticlesTitles){
         List<Article> mergedListOfArticles = new List<Article>();
 
+//        todo duplikaty w internalach
         mergedListOfArticles.addAll(internalArticles);
-        for (Article externalArticleVerified : listExternalArticlesVerified){
-            if (!internalArticlesTitles.contains(externalArticleVerified.title)) {
-                mergedListOfArticles.add(externalArticleVerified);
+        if (!listExternalArticlesVerified.isEmpty()) {
+            for (Article externalArticleVerified : listExternalArticlesVerified){
+                if (!internalArticlesTitles.contains(externalArticleVerified.title)) {
+                    mergedListOfArticles.add(externalArticleVerified);
+                }
             }
         }
 
@@ -210,6 +218,7 @@ public with sharing class NewsAppController {
 
     @AuraEnabled
     public static void addArticleToBlacklist(
+            String id,
             String source,
             String author,
             String title,
@@ -218,20 +227,101 @@ public with sharing class NewsAppController {
             String urlToImage,
             Datetime publishedAt,
             String content){
-        ArticleBuilderObject builder = new ArticleBuilderObject();
-        builder.setAuthor(author);
-        builder.setContent(content);
-        builder.setDescription(description);
-        builder.setPublishedAt(publishedAt);
-        builder.setTitle(title);
-        builder.setUrl(url);
-        builder.setUrlToImage(urlToImage);
-        builder.setSource(source);
-        Article__c article = builder.getArticle();
-        insert article;
+        try {
+            if (id == null || id == '') {
+                ArticleBuilderObject builder = new ArticleBuilderObject();
+                builder.setAuthor(author);
+                builder.setContent(content);
+                builder.setDescription(description);
+                builder.setPublishedAt(publishedAt);
+                builder.setTitle(title);
+                builder.setUrl(url);
+                builder.setUrlToImage(urlToImage);
+                builder.setSource(source);
+                Article__c article = builder.getArticle();
+                insert article;
 
-//        Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
-//        articleToBlackList.Article_Parent__c = article.Id;
-//        insert articleToBlackList;
+                Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
+                articleToBlackList.Article_Parent__c = article.Id;
+                insert articleToBlackList;
+            } else {
+                Article__c article = [SELECT Id FROM Article__c WHERE Id =: id];
+                Article_From_Black_List__c articleToBlackList = new Article_From_Black_List__c();
+                articleToBlackList.Article_Parent__c = article.Id;
+                insert articleToBlackList;
+            }
+        } catch (Exception e){
+            System.debug(e);
+        }
+    }
+
+    @AuraEnabled
+    public static List<Comment__c> getComments(String id){
+        return
+        [
+                SELECT CommentText__c, Article_Parent__c
+                FROM Comment__c
+                WHERE Article_Parent__c =: id];
+    }
+
+    @AuraEnabled
+    public static void saveComment(
+            String id,
+            String source,
+            String author,
+            String title,
+            String description,
+            String url,
+            String urlToImage,
+            Datetime publishedAt,
+            String content,
+            String comment){
+        try {
+            if (id != null) {
+                Comment__c newComment = new Comment__c(
+                        CommentText__c = comment,
+                        Article_Parent__c = id);
+                insert newComment;
+            } else {
+                ArticleBuilderObject builder = new ArticleBuilderObject();
+                builder.setAuthor(author);
+                builder.setContent(content);
+                builder.setDescription(description);
+                builder.setPublishedAt(publishedAt);
+                builder.setTitle(title);
+                builder.setUrl(url);
+                builder.setUrlToImage(urlToImage);
+                builder.setSource(source);
+                Article__c article = builder.getArticle();
+                insert article;
+
+                Comment__c newComment = new Comment__c(
+                        CommentText__c = comment,
+                        Article_Parent__c = article.id);
+                insert newComment;
+                System.debug(newComment);
+            }
+        } catch (Exception e){
+            System.debug(e);
+        }
+    }
+
+    @AuraEnabled
+    public static List<Article> getPopularArticles(){
+        List<Article__c> articleObjects = [
+                SELECT
+                        Title__c,
+                        PublishedAt__c,
+                        UrlToImage__c,
+                        Url__c,
+                        Author__c,
+                        Description__c,
+                        Content__c,
+                        SourceName__c,
+                        CreatedDate,
+                        Category__c
+                FROM Article__c
+                LIMIT 3];
+        return sObjectToClassArticle(articleObjects);
     }
 }

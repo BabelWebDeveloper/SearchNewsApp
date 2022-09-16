@@ -601,9 +601,6 @@
                             <option name="name" value="AccountSearch" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="AccountSpinner" />
-                          </MetadataEntry>
-                          <MetadataEntry>
                             <option name="name" value="AccountsLoaded" />
                           </MetadataEntry>
                           <MetadataEntry>
@@ -645,6 +642,22 @@
                           </MetadataEntry>
                           <MetadataEntry>
                             <option name="name" value="SelectedNews" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="LayoutSpinner" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ChangeVisibilityOfSearchListEvent" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="LayoutSpinnerClose" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="PopularNews" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                         </list>

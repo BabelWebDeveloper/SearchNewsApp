@@ -2,14 +2,15 @@
         implements="forceCommunity:searchInterface,flexipage:availableForAllPageTypes"
         access="global"
         controller="NewsAppController">
+    <aura:registerEvent name="closeSpinnerInEmergency" type="c:LayoutSpinnerClose"/>
     <aura:registerEvent name="HandleSearchListEvent" type="c:HandleSearchListEvent"/>
+    <aura:registerEvent name="afterSearchSpinnerRegister" type="c:LayoutSpinner"/>
     <aura:attribute name="searchKeyWord" type="String"/>
     <aura:attribute name="searchCategory" type="String"/>
-    <aura:attribute name="categories" type="String[]" default="Business,Entertainment,General,Health,Science,Sports,Technology"/>
-<!--    przrobić na custom settings-->
-    <aura:handler name="init" action="{!c.onInit}" value="{!this}" />
-    <div class="c-container">
-        <lightning:layout pullToBoundary="medium"  class="slds-grid_vertical-align-end">
+    <aura:attribute name="category" type="String"/>
+    <aura:handler name="init" action="{!c.onInit}" value="{!this}"/>
+    <div class="c-container slds-m-bottom_large">
+        <lightning:layout pullToBoundary="medium" class="slds-grid_vertical-align-end">
 
             <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
                 <div class="custom-box">
@@ -38,13 +39,19 @@
                         <div class="search-wrapper">
                             <form class="search-form">
                                 <div class="search-input-wrapper">
-                                    <lightning:input
-                                            label="Select a Category"
-                                            class="search-input slds-size_medium slds-float_right"
-                                            type="text"
-                                            placeholder="Category"
-                                            value="{!v.searchCategory}"
-                                    />
+                                    <div class="row">
+                                        <p class="title">Select category</p>
+                                        <ui:inputSelect class="single" aura:id="InputSelectSingle"
+                                                        change="{!c.onSingleSelectChange}">
+                                            <ui:inputSelectOption text="Business" value="true"/>
+                                            <ui:inputSelectOption text="Entertainment"/>
+                                            <ui:inputSelectOption text="General"/>
+                                            <ui:inputSelectOption text="Health"/>
+                                            <ui:inputSelectOption text="Science"/>
+                                            <ui:inputSelectOption text="Sports"/>
+                                            <ui:inputSelectOption text="Technology"/>
+                                        </ui:inputSelect>
+                                    </div>
                                 </div>
                                 <input type="hidden" name="language" value="en"/>
                             </form>
@@ -52,25 +59,6 @@
                     </div>
                 </div>
             </lightning:layoutItem>
-
-<!--            <lightning:layoutItem flexibility="auto" padding="horizontal-medium">-->
-<!--                <div class="custom-box">-->
-<!--                    <div class="search">-->
-<!--                        <div class="search-wrapper">-->
-<!--                            <form class="search-form">-->
-<!--                                <div class="search-input-wrapper">-->
-<!--                                    <lightning:select name="select" label="Select a Category">-->
-<!--                                        <aura:iteration items="{!v.categories}" var="category">-->
-<!--                                            <option text="{!category}"></option>-->
-<!--                                        </aura:iteration>-->
-<!--                                    </lightning:select>-->
-<!--                                </div>-->
-<!--                                <input type="hidden" name="language" value="en"/>-->
-<!--                            </form>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </lightning:layoutItem>-->
 
             <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
                 <div class="custom-box">

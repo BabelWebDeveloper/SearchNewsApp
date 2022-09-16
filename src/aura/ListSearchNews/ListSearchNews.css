@@ -1,0 +1,8 @@
+/**
+ * Created by przemyslaw.babel on 16.09.2022.
+ */
+.THIS.slds-is-absolute {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="LayoutSpinner">
+    <aura:attribute name="afterSearchSpinner" type="Boolean" default="false"/>
+</aura:event>

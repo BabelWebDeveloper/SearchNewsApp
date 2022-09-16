@@ -1,0 +1,21 @@
+/**
+ * Created by przemyslaw.babel on 15.09.2022.
+ */
+.THIS.popularArticlesImageClass {
+    object-fit: contain;
+}
+.THIS.h2 {
+  font-family: Courier New, monospace;
+  font-size: 1em;
+  margin: 1em 0 0.3em;
+}
+
+.THIS.img {
+  width: 150px;
+  height: 100px;
+  border: 1px solid #000;
+  margin: 10px 0;
+}
+.THIS.cover {
+  object-fit: cover;
+}

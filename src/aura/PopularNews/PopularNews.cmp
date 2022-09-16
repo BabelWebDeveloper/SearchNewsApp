@@ -1,0 +1,48 @@
+<aura:component description="PopularNews" controller="NewsAppController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="popularArticles" type="Article[]"/>
+    <div class="slds-grid slds-wrap">
+        <aura:iteration items="{!v.popularArticles}" var="popularArticle">
+            <span class="slds-size_1-of-4 slds-align_absolute-center slds-is-relative" style="height:320px">
+                <div
+                        class="
+                        slds-is-absolute
+                        slds-grid
+                        slds-wrap
+                        slds-align_absolute-center
+                        slds-p-horizontal_none
+                        slds-p-vertical_small"
+                        style="top:0">
+                    <div class="
+                        slds-col
+                        slds-size_10-of-12
+                        slds-align_absolute-center
+                        slds-p-horizontal_none
+                        slds-p-vertical_none"
+                        style="top:0">
+                        <img src="{!popularArticle.urlToImage}" style="float: left;width: 100%; height: 200px; object-fit: cover;"/>
+                    </div>
+                    <div class="
+                        slds-col
+                        slds-size_10-of-12
+                        slds-align_absolute-center
+                        slds-theme_default
+                        slds-p-horizontal_none"
+                        style="top:0; height:100px">
+                        <h2 class="slds-p-horizontal_small slds-text-align_center slds-text-heading_small">{!popularArticle.title}</h2>
+                    </div>
+                </div>
+            </span>
+        </aura:iteration>
+    </div>
+<!--    <lightning:carousel class="slds-large-size_large slds-align_absolute-center">-->
+<!--        <aura:iteration items="{!v.popularArticles}" var="popularArticle">-->
+<!--            <lightning:carouselImage-->
+<!--                    src="{!popularArticle.urlToImage}"-->
+<!--                    header="{!popularArticle.title}">-->
+<!--                <div>fsdfsdfsd</div>-->
+<!--            </lightning:carouselImage>-->
+<!--        </aura:iteration>-->
+<!--    </lightning:carousel>-->
+</aura:component>
+

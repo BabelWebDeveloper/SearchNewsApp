@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="ChangeVisibilityOfSearchListEvent">
+    <aura:attribute name="changeVisibilityOfSearchListEvent" type="Boolean" default="false"/>
+</aura:event>
