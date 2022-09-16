@@ -322,4 +322,11 @@ public with sharing class NewsAppController {
                 LIMIT 3];
         return sObjectToClassArticle(articleObjects);
     }
+
+    @AuraEnabled
+    public static User fetchUser(){
+        User user = [SELECT Id,Name,MediumPhotoURL from User WHERE Id =: userInfo.getUserId()];
+        return user;
+    }
 }
+//todo Zmienić układ modala: zdjęcie po lewej, po prawej description i content, po kliknięciu show comments pojawiają się komentarze i możliwość ich dodania

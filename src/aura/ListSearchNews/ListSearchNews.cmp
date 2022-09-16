@@ -1,6 +1,7 @@
 <aura:component description="ListSearchNews" implements="flexipage:availableForAllPageTypes"
                 controller="NewsAppController" access="global">
     <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
+    <aura:handler name="init" value="this" action="{!c.doInit}"/>
     <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
     <aura:attribute name="comments" type="Comment__c[]"/>
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
@@ -9,6 +10,7 @@
     <aura:attribute name="isSearchListNotEmpty" type="Boolean" default="false"/>
     <aura:attribute name="message" type="String" default=""/>
     <aura:attribute name="showApproveForComment" type="Boolean" default="true"/>
+    <aura:attribute name="userInfo" type="User"/>
     <div class="slds-is-relative slds-align_absolute-center" style="width:100vw">
         <div style="width:75vw">
             <aura:if isTrue="{!v.isSearchListNotEmpty}">
@@ -73,93 +75,115 @@
                     aria-modal="true"
                     aria-describedby="modal-content-id-1"
                     class="slds-modal slds-fade-in-open slds-align_absolute-center"
-                    style="width:100vw;height:100vh">
-                <div class="slds-is-absolute" style="width:95vw;">
-                    <!-- Modal/Popup Box Header Starts here-->
-                    <header class="slds-modal__header">
+                    style="width:100vw;">
+                <div class="c-container slds-is-absolute slds-theme_default" style="width:80vw;">
+                    <header class="slds-modal__header slds-p-horizontal_none">
                         <lightning:buttonIcon iconName="utility:close"
                                               onclick="{! c.closeModel }"
                                               alternativeText="close"
                                               variant="bare-inverse"
                                               class="slds-modal__close"/>
                         <h2 id="modal-heading-01"
-                            class="slds-text-heading_medium slds-hyphenate">{!v.selectedArticle.title}</h2>
+                            class="slds-text-heading_small slds-hyphenate">{!v.selectedArticle.title}</h2>
                     </header>
-                    <!--Modal/Popup Box Body Starts here-->
-                    <div class="slds-modal__content slds-p-around_medium slds-align_absolute-center"
-                         id="modal-content-id-1"
-                         style="margin: 0;overflow: hidden">
-                        <img src="{!v.selectedArticle.urlToImage}"
-                             style="float: left;width: 200px; height: 200px; object-fit: cover;"></img>
-                    </div>
-                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"
-                         style="margin: 0;height: fit-content;overflow: hidden">
-                        <p>{!v.selectedArticle.description}</p>
-                    </div>
-                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"
-                         style="margin: 0;height: fit-content;overflow: hidden">
-                        <p>{!v.selectedArticle.content}</p>
-                        <a href="{!v.selectedArticle.url}" target="_blank">Read full article here!</a>
-                    </div>
-                    <div class="slds-modal__content slds-p-around_medium slds-align_absolute-center" id="modal-content-id-1"
-                         style="margin: 0;height:20vh;overflow: hidden">
-                        <div class="slds-modal__content slds-p-around_none" style="width:100%">
-                            <aura:if isTrue="{!v.showApproveForComment}">
-                                <lightning:textarea name="input1" label="Leave a comment below..."
-                                                    value="{!v.newComment}"/>
-                                <aura:set attribute="else">
-                                    <div class="slds-m-bottom_medium">
-                                        <ui:message
-                                                title="Thank you for your comment!"
-                                                severity="info"
-                                                class="slds-m-horizontal_none">
-                                            This comment is waiting for approval process.
-                                        </ui:message>
+                    <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-grid">
+                        <lightning:layoutItem flexibility="auto" padding="around-small"
+                                              class="custom-box slds-size_1-of-2">
+                            <div class="slds-modal__content slds-p-vertical_medium slds-p-horizontal_none slds-align_absolute-center"
+                                 id="modal-content-id-1"
+                                 style="margin: 0;overflow: hidden">
+                                <img src="{!v.selectedArticle.urlToImage}"
+                                     style="float: left;width: 500px; height: 500px; object-fit: cover;"></img>
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto" padding="around-small"
+                                              class="custom-box slds-size_1-of-2">
+                            <h3 class="slds-tile">Comment list:</h3>
+                            <div class="slds-modal__content slds-p-horizontal_none slds-p-vertical_medium"
+                                 style="max-height:50vh">
+                                <aura:iteration
+                                        items="{!v.comments}"
+                                        var="comment"
+                                        indexVar="indexComment">
+                                    <div class="c-container">
+                                        <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-grid">
+                                            <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_2-of-12 slds-align_absolute-center">
+                                                <lightning:icon iconName="action:user" size="medium"/>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_10-of-12 slds-float_left">
+                                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-grid slds-float_left">
+                                                    <lightning:layoutItem
+                                                            flexibility="auto"
+                                                            padding="around-small"
+                                                            class="custom-box slds-size_1-of-1 slds-text-align_left slds-p-left_medium">
+                                                        <p style="font-weight: bold;">{!v.userInfo.Name}</p>
+                                                        <p>{!v.userInfo.MediumPhotoURL}</p>
+                                                    </lightning:layoutItem>
+                                                    <lightning:layoutItem
+                                                            flexibility="auto"
+                                                            padding="around-small"
+                                                            class="custom-box slds-size_1-of-1 slds-text-align_left slds-p-left_medium">
+                                                        <p>{!comment.CommentText__c}</p>
+                                                    </lightning:layoutItem>
+                                                </lightning:layout>
+                                            </lightning:layoutItem>
+                                        </lightning:layout>
                                     </div>
-                                </aura:set>
-                            </aura:if>
-                            <aura:if isTrue="{!v.showApproveForComment}">
-                                <lightning:button variant="success" label="Submit" title="Submit"
-                                                  onclick="{! c.saveNewComment }" class="slds-size_small"/>
-                            </aura:if>
-                        </div>
-                    </div>
-
-                    <div class="slds-modal__content slds-p-around_medium" style="height:fit-content;max-height:10vh">
-                        <h3>List of comments:</h3>
-                        <aura:iteration
-                                items="{!v.comments}"
-                                var="comment"
-                                indexVar="indexComment">
-                            <tr
-                                    style="cursor:pointer"
-                                    class="slds-text-body_regular slds-size_medium"
-                                    data-record="{!indexComment}"
-                                    onclick="{!c.selectComment}">
-                                <td class="slds-size_medium">
-                                    <p>
-                                        <lightning:formattedText value="{!comment.CommentText__c}"/>
-                                    </p>
-                                </td>
-                            </tr>
-                        </aura:iteration>
-                    </div>
-
-                    <!--Modal/Popup Box Footer Starts here-->
-                    <footer class="slds-modal__footer">
+<!--                                    <tr-->
+<!--                                            style="cursor:pointer"-->
+<!--                                            class="slds-text-body_regular slds-size_medium slds-p-vertical_medium"-->
+<!--                                            data-record="{!indexComment}"-->
+<!--                                            onclick="{!c.selectComment}">-->
+<!--                                        <td class="slds-size_medium slds-p-vertical_medium">-->
+<!--                                            <tr>-->
+<!--                                                -->
+<!--                                            </tr>-->
+<!--                                            <tr>-->
+<!--                                                <td class="slds-p-vertical_medium">-->
+<!--                                                    <tr>-->
+<!--                                                        <p style="font-weight: bold;">{!v.userInfo.Name}</p>-->
+<!--                                                        <p>{!v.userInfo.MediumPhotoURL}</p>-->
+<!--                                                    </tr>-->
+<!--                                                    <tr class="slds-p-vertical_medium">{!comment.CommentText__c}</tr>-->
+<!--                                                </td>-->
+<!--                                            </tr>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+                                </aura:iteration>
+                            </div>
+                            <!--                            <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-grid">-->
+                            <!--                                <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">-->
+                            <!--                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">-->
+                            <!--                                        <p>{!v.selectedArticle.description}</p>-->
+                            <!--                                    </div>-->
+                            <!--                                </lightning:layoutItem>-->
+                            <!--                                <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">-->
+                            <!--                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">-->
+                            <!--                                        <p>{!v.selectedArticle.content}</p>-->
+                            <!--                                        <a href="{!v.selectedArticle.url}" target="_blank">Read full article here!</a>-->
+                            <!--                                    </div>-->
+                            <!--                                </lightning:layoutItem>-->
+                            <!--                            </lightning:layout>-->
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <footer class="slds-modal__footer slds-align_absolute-center">
                         <lightning:button variant="neutral"
                                           label="Cancel"
                                           title="Cancel"
                                           onclick="{! c.closeModel }"/>
-                        <lightning:button variant="brand"
-                                          label="Add to blacklist"
-                                          title="Add to blacklist"
+                        <lightning:button variant="destructive"
+                                          label="Add To Blacklist"
+                                          title="Add To Blacklist"
                                           onclick="{!c.addToBlacklist}"/>
-                    </footer>
+                        <lightning:button variant="success"
+                                          label="Add To Favorite"
+                                          title="Add To Favorite"
+                                          onclick="{!c.addToBlacklist}"/>
 
+                    </footer>
                 </div>
             </section>
-            <div class="slds-backdrop slds-backdrop_open" style="width:100vw"></div>
+            <div class="slds-backdrop slds-backdrop_open"></div>
         </aura:if>
     </div>
 </aura:component>

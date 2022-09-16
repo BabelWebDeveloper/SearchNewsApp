@@ -55,5 +55,17 @@
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
         component.set( "v.showApproveForComment", false );
-    }
+    },
+    doInit : function(component, event, helper) {
+    let action = component.get("c.fetchUser");
+        action.setCallback(this, function(response) {
+            let state = response.getState();
+            if (state === "SUCCESS") {
+                let storeResponse = response.getReturnValue();
+                console.log(storeResponse.MediumPhotoURL)
+                component.set("v.userInfo", storeResponse);
+            }
+        });
+        $A.enqueueAction(action);
+    },
 })
