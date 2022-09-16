@@ -5,6 +5,7 @@
     <aura:registerEvent name="closeSpinnerInEmergency" type="c:LayoutSpinnerClose"/>
     <aura:registerEvent name="HandleSearchListEvent" type="c:HandleSearchListEvent"/>
     <aura:registerEvent name="afterSearchSpinnerRegister" type="c:LayoutSpinner"/>
+    <aura:registerEvent name="afterSearchChangeCssInLayout" type="c:ChangeCssInLayoutNewsEvent"/>
     <aura:attribute name="searchKeyWord" type="String"/>
     <aura:attribute name="searchCategory" type="String"/>
     <aura:attribute name="category" type="String"/>

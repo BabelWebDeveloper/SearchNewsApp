@@ -96,6 +96,8 @@
                                      style="float: left;width: 500px; height: 500px; object-fit: cover;"></img>
                             </div>
                         </lightning:layoutItem>
+
+
                         <lightning:layoutItem flexibility="auto" padding="around-small"
                                               class="custom-box slds-size_1-of-2">
                             <h3 class="slds-tile">Comment list:</h3>
@@ -129,41 +131,44 @@
                                             </lightning:layoutItem>
                                         </lightning:layout>
                                     </div>
-<!--                                    <tr-->
-<!--                                            style="cursor:pointer"-->
-<!--                                            class="slds-text-body_regular slds-size_medium slds-p-vertical_medium"-->
-<!--                                            data-record="{!indexComment}"-->
-<!--                                            onclick="{!c.selectComment}">-->
-<!--                                        <td class="slds-size_medium slds-p-vertical_medium">-->
-<!--                                            <tr>-->
-<!--                                                -->
-<!--                                            </tr>-->
-<!--                                            <tr>-->
-<!--                                                <td class="slds-p-vertical_medium">-->
-<!--                                                    <tr>-->
-<!--                                                        <p style="font-weight: bold;">{!v.userInfo.Name}</p>-->
-<!--                                                        <p>{!v.userInfo.MediumPhotoURL}</p>-->
-<!--                                                    </tr>-->
-<!--                                                    <tr class="slds-p-vertical_medium">{!comment.CommentText__c}</tr>-->
-<!--                                                </td>-->
-<!--                                            </tr>-->
-<!--                                        </td>-->
-<!--                                    </tr>-->
                                 </aura:iteration>
                             </div>
-                            <!--                            <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-grid">-->
-                            <!--                                <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">-->
-                            <!--                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">-->
-                            <!--                                        <p>{!v.selectedArticle.description}</p>-->
-                            <!--                                    </div>-->
-                            <!--                                </lightning:layoutItem>-->
-                            <!--                                <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">-->
-                            <!--                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">-->
-                            <!--                                        <p>{!v.selectedArticle.content}</p>-->
-                            <!--                                        <a href="{!v.selectedArticle.url}" target="_blank">Read full article here!</a>-->
-                            <!--                                    </div>-->
-                            <!--                                </lightning:layoutItem>-->
-                            <!--                            </lightning:layout>-->
+                            <div class="slds-modal__content slds-p-around_medium slds-align_absolute-center" id="modal-content-id-1"
+                                 style="margin: 0;height:20vh;overflow: hidden">
+                                <div class="slds-modal__content slds-p-around_none" style="width:100%">
+                                    <aura:if isTrue="{!v.showApproveForComment}">
+                                        <lightning:textarea name="input1" label="Leave a comment below..."
+                                                            value="{!v.newComment}"/>
+                                        <aura:set attribute="else">
+                                            <div class="slds-m-bottom_medium">
+                                                <ui:message
+                                                        title="Thank you for your comment!"
+                                                        severity="info"
+                                                        class="slds-m-horizontal_none">
+                                                    This comment is waiting for approval process.
+                                                </ui:message>
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.showApproveForComment}">
+                                        <lightning:button variant="success" label="Submit" title="Submit"
+                                                          onclick="{! c.saveNewComment }" class="slds-size_small"/>
+                                    </aura:if>
+                                </div>
+                            </div>
+<!--                                                        <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-grid">-->
+<!--                                                            <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">-->
+<!--                                                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">-->
+<!--                                                                    <p>{!v.selectedArticle.description}</p>-->
+<!--                                                                </div>-->
+<!--                                                            </lightning:layoutItem>-->
+<!--                                                            <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">-->
+<!--                                                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">-->
+<!--                                                                    <p>{!v.selectedArticle.content}</p>-->
+<!--                                                                    <a href="{!v.selectedArticle.url}" target="_blank">Read full article here!</a>-->
+<!--                                                                </div>-->
+<!--                                                            </lightning:layoutItem>-->
+<!--                                                        </lightning:layout>-->
                         </lightning:layoutItem>
                     </lightning:layout>
                     <footer class="slds-modal__footer slds-align_absolute-center">

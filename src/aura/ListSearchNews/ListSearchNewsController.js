@@ -3,7 +3,6 @@
         let articlesFromHandleSearchListEvent = event.getParam('articles');
         if (articlesFromHandleSearchListEvent.length > 0){
             component.set("v.isSearchListNotEmpty",true);
-//            todo tutaj odpalić event który zamknie spinner i tak samo poniżej closeSpinnerInEmergency
         } else {
             component.set("v.isSearchListNotEmpty",false);
             component.set("v.message","No news searched in selected parameters, try to write different keyword or category.");
@@ -24,11 +23,13 @@
             helper.getCommentsHelper( component, id );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
+        return;
     },
     closeModel: function(component, event, helper) {
         component.set("v.isModalOpen", false);
         component.set( "v.newComment", '' );
         component.set( "v.showApproveForComment", true );
+        return;
     },
     addToBlacklist: function(component, event, helper) {
         let selectedArticle = component.get("v.selectedArticle");
@@ -39,10 +40,15 @@
             helper.addArticleToBlacklistHelper( component, selectedArticle );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
+//        let retrieveSearchListFromHandleSearchListEvent = component.get('c.retrieveSearchListFromHandleSearchListEvent');
+        $A.get('e.force:refreshView').fire();//ASYNC AWAIT
+//                $A.enqueueAction(retrieveSearchListFromHandleSearchListEvent);
+        return;
     },
     selectComment: function(component, event, helper){
         let target = component.get("v.comments")[event.currentTarget.dataset.record],
                 selectedArticle = JSON.stringify(target);
+                return;
     },
     saveNewComment : function (component, event, helper) {
         let comment = component.get( "v.newComment" );
@@ -55,6 +61,7 @@
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
         component.set( "v.showApproveForComment", false );
+        return;
     },
     doInit : function(component, event, helper) {
     let action = component.get("c.fetchUser");
@@ -67,5 +74,6 @@
             }
         });
         $A.enqueueAction(action);
+        return;
     },
 })

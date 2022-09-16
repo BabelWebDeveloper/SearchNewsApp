@@ -10,6 +10,7 @@
         <aura:if isTrue="{!v.toggleSpinner}">
             <lightning:spinner alternativeText="Loading" variant="inverse" size="large"/>
         </aura:if>
+
         <lightning:layout>
             <lightning:layoutItem flexibility="auto">
                 <div class="custom-box">
