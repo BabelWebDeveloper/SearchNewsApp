@@ -40,9 +40,6 @@
             helper.addArticleToBlacklistHelper( component, selectedArticle );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
-//        let retrieveSearchListFromHandleSearchListEvent = component.get('c.retrieveSearchListFromHandleSearchListEvent');
-        $A.get('e.force:refreshView').fire();//ASYNC AWAIT
-//                $A.enqueueAction(retrieveSearchListFromHandleSearchListEvent);
         return;
     },
     selectComment: function(component, event, helper){
@@ -64,7 +61,7 @@
         return;
     },
     doInit : function(component, event, helper) {
-    let action = component.get("c.fetchUser");
+        let action = component.get("c.fetchUser");
         action.setCallback(this, function(response) {
             let state = response.getState();
             if (state === "SUCCESS") {

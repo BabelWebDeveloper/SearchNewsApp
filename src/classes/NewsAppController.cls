@@ -60,7 +60,7 @@ public with sharing class NewsAppController {
 
             request.setEndpoint(requestBody);
             request.setMethod('GET');
-//            response = myHttp.send(request);
+            response = myHttp.send(request);
 
             String jsonString = response.getBody();
             Integer statusCode = response.getStatusCode();
@@ -84,9 +84,34 @@ public with sharing class NewsAppController {
                 WHERE CreatedById IN (SELECT Id FROM User)
         ];
 
-
         return getBlacklistArticleTitles(blacklistArticles);
     }
+
+    @AuraEnabled
+    public static List<Article> showBlacklistArticles() {
+        System.debug('backend ShowSelectedArticlesEvent work');
+        List<Article__c> blacklistArticles = [
+                SELECT
+                        Description__c,
+                        OwnerId,
+                        SourceName__c,
+                        Content__c,
+                        Author__c,
+                        Url__c, UrlToImage__c
+                FROM Article__c
+                WHERE Id IN (
+                        SELECT
+                                Article_Parent__c
+                        FROM Article_From_Black_List__c)
+                AND OwnerId IN (
+                        SELECT
+                                Id
+                        FROM User)
+        ];
+
+        return sObjectToClassArticle(blacklistArticles);
+    }
+
 
     private static Set<String> getBlacklistArticleTitles(List<Article_From_Black_List__c> blacklistArticles) {
         Set<String> blacklistArticleTitles = new Set<String>();
@@ -257,7 +282,7 @@ public with sharing class NewsAppController {
     public static List<Comment__c> getComments(String id){
         return
         [
-                SELECT CommentText__c, Article_Parent__c
+                SELECT CommentText__c, Article_Parent__c, CreatedDate
                 FROM Comment__c
                 WHERE Article_Parent__c =: id];
     }

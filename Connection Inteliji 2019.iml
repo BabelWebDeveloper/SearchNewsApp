@@ -610,9 +610,6 @@
                             <option name="name" value="LoadAccount" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="Test" />
-                          </MetadataEntry>
-                          <MetadataEntry>
                             <option name="name" value="clearDetails" />
                           </MetadataEntry>
                           <MetadataEntry>
@@ -649,15 +646,15 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="ChangeVisibilityOfSearchListEvent" />
-                            <option name="selected" value="true" />
-                          </MetadataEntry>
-                          <MetadataEntry>
                             <option name="name" value="LayoutSpinnerClose" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
                             <option name="name" value="PopularNews" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ShowSelectedArticlesEvent" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                         </list>

@@ -6,14 +6,16 @@
     <aura:registerEvent name="HandleSearchListEvent" type="c:HandleSearchListEvent"/>
     <aura:registerEvent name="afterSearchSpinnerRegister" type="c:LayoutSpinner"/>
     <aura:registerEvent name="afterSearchChangeCssInLayout" type="c:ChangeCssInLayoutNewsEvent"/>
+    <aura:registerEvent name="showSelectedArticlesEvent" type="c:ShowSelectedArticlesEvent"/>
     <aura:attribute name="searchKeyWord" type="String"/>
     <aura:attribute name="searchCategory" type="String"/>
     <aura:attribute name="category" type="String"/>
+    <aura:attribute name="userInfo" type="User"/>
+    <aura:attribute name="showNavigationMenu" type="boolean" default="true"/>
     <aura:handler name="init" action="{!c.onInit}" value="{!this}"/>
     <div class="c-container slds-m-bottom_large">
         <lightning:layout pullToBoundary="medium" class="slds-grid_vertical-align-end">
-
-            <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_5-of-12">
                 <div class="custom-box">
                     <div class="search">
                         <div class="search-wrapper">
@@ -34,7 +36,7 @@
                 </div>
             </lightning:layoutItem>
 
-            <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_5-of-12">
                 <div class="custom-box">
                     <div class="search">
                         <div class="search-wrapper">
@@ -61,12 +63,30 @@
                 </div>
             </lightning:layoutItem>
 
-            <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
-                <div class="custom-box">
-                    <lightning:button variant="brand" label="Search" title="Brand action" onclick="{!c.search}"/>
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_2-of-12">
+                <div class="c-container">
+                    <lightning:layout verticalAlign="stretch" multipleRows="true" class="slds-size_1-of-3">
+                        <lightning:layoutItem flexibility="auto" class="custom-box slds-align_absolute-center">
+                            <div class="custom-box">
+                                <lightning:buttonIcon
+                                        onclick="{!c.search}"
+                                        iconName="utility:search"
+                                        variant="bare"
+                                        alternativeText="Search"
+                                        iconClass="dark" title="Search"
+                                        size="large"/>
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto" class="custom-box slds-size_1-of-3">
+                                <lightning:buttonMenu alternativeText="Show menu" variant="container" onselect="{! c.handleSelect }">
+                                    <lightning:menuItem value="popular" label="Popular news" />
+                                    <lightning:menuItem value="blacklist" label="Blacklist" />
+                                </lightning:buttonMenu>
+                        </lightning:layoutItem>
+                    </lightning:layout>
                 </div>
-            </lightning:layoutItem>
 
+            </lightning:layoutItem>
         </lightning:layout>
     </div>
 </aura:component>

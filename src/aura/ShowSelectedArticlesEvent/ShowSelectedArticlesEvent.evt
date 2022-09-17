@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="ShowSelectedArticlesEvent">
+    <aura:attribute name="articles" type="Article__c[]"/>
+</aura:event>

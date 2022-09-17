@@ -3,14 +3,14 @@
     <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler event="c:LayoutSpinner" action="{!c.afterSearchSpinner}"/>
     <aura:handler event="c:LayoutSpinnerClose" action="{!c.hideSpinner}"/>
+    <aura:handler event="c:ShowSelectedArticlesEvent" action="{!c.showBlacklistArticles}"/>
     <aura:attribute name="toggleSpinner" type="boolean" default="false"/>
     <aura:attribute name="afterSearch" type="Boolean" default="false"/>
-
+    <aura:attribute name="showSelectedArticles" type="Boolean" default="false"/>
     <div>
         <aura:if isTrue="{!v.toggleSpinner}">
             <lightning:spinner alternativeText="Loading" variant="inverse" size="large"/>
         </aura:if>
-
         <lightning:layout>
             <lightning:layoutItem flexibility="auto">
                 <div class="custom-box">
@@ -20,9 +20,15 @@
         </lightning:layout>
         <lightning:layout>
             <lightning:layoutItem flexibility="auto">
-                <div class="custom-box">
-                    <c:PopularNews/>
-                </div>
+                <aura:if isTrue="{!v.showSelectedArticles}">
+                    <c:ListSearchNews/>
+                    <aura:set attribute="else">
+                        <div class="custom-box">
+                            <c:PopularNews/>
+                        </div>
+                    </aura:set>
+                </aura:if>
+
             </lightning:layoutItem>
         </lightning:layout>
         <lightning:layout>
