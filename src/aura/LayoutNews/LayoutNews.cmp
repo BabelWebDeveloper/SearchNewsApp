@@ -3,7 +3,7 @@
     <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler event="c:LayoutSpinner" action="{!c.afterSearchSpinner}"/>
     <aura:handler event="c:LayoutSpinnerClose" action="{!c.hideSpinner}"/>
-    <aura:handler event="c:ShowSelectedArticlesEvent" action="{!c.showBlacklistArticles}"/>
+    <aura:handler event="c:ChangeVisibilityToListEvent" action="{!c.changeVisibilityToList}"/>
     <aura:attribute name="toggleSpinner" type="boolean" default="false"/>
     <aura:attribute name="afterSearch" type="Boolean" default="false"/>
     <aura:attribute name="showSelectedArticles" type="Boolean" default="false"/>
@@ -31,7 +31,7 @@
 
             </lightning:layoutItem>
         </lightning:layout>
-        <lightning:layout>
+        <lightning:layout class="slds-hidden">
             <lightning:layoutItem flexibility="auto">
                 <div class="custom-box slds-align_absolute-center">
                     <c:ListSearchNews/>

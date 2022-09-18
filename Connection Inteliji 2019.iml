@@ -654,7 +654,15 @@
                             <option name="selected" value="true" />
                           </MetadataEntry>
                           <MetadataEntry>
-                            <option name="name" value="ShowSelectedArticlesEvent" />
+                            <option name="name" value="ShowBlacklistArticles" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ShowWhitelistArticles" />
+                            <option name="selected" value="true" />
+                          </MetadataEntry>
+                          <MetadataEntry>
+                            <option name="name" value="ChangeVisibilityToListEvent" />
                             <option name="selected" value="true" />
                           </MetadataEntry>
                         </list>

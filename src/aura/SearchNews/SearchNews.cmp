@@ -6,13 +6,20 @@
     <aura:registerEvent name="HandleSearchListEvent" type="c:HandleSearchListEvent"/>
     <aura:registerEvent name="afterSearchSpinnerRegister" type="c:LayoutSpinner"/>
     <aura:registerEvent name="afterSearchChangeCssInLayout" type="c:ChangeCssInLayoutNewsEvent"/>
-    <aura:registerEvent name="showSelectedArticlesEvent" type="c:ShowSelectedArticlesEvent"/>
+    <aura:registerEvent name="showBlacklistArticles" type="c:ShowBlacklistArticles"/>
+    <aura:registerEvent name="showWhitelistArticles" type="c:ShowWhitelistArticles"/>
+<!--    <aura:registerEvent name="changeVisibilityToListEvent" type="c:ChangeVisibilityToListEvent"/>-->
     <aura:attribute name="searchKeyWord" type="String"/>
     <aura:attribute name="searchCategory" type="String"/>
     <aura:attribute name="category" type="String"/>
     <aura:attribute name="userInfo" type="User"/>
     <aura:attribute name="showNavigationMenu" type="boolean" default="true"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler name="init" action="{!c.onInit}" value="{!this}"/>
+    <aura:handler event="c:SearchAgain" action="{!c.search}"/>
+    <aura:if isTrue="{!v.toggleSpinner}">
+        <lightning:spinner alternativeText="Loading" variant="inverse" size="large"/>
+    </aura:if>
     <div class="c-container slds-m-bottom_large">
         <lightning:layout pullToBoundary="medium" class="slds-grid_vertical-align-end">
             <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_5-of-12">
@@ -81,6 +88,7 @@
                                 <lightning:buttonMenu alternativeText="Show menu" variant="container" onselect="{! c.handleSelect }">
                                     <lightning:menuItem value="popular" label="Popular news" />
                                     <lightning:menuItem value="blacklist" label="Blacklist" />
+                                    <lightning:menuItem value="whitelist" label="Whitelist" />
                                 </lightning:buttonMenu>
                         </lightning:layoutItem>
                     </lightning:layout>

@@ -7,7 +7,7 @@ public with sharing class ArticleBuilder {
     }
 
     public ArticleBuilder setId(String id) {
-        article.idString = id;
+        article.id = id;
         return this;
     }
 
@@ -48,6 +48,16 @@ public with sharing class ArticleBuilder {
 
     public ArticleBuilder setCategory(String category) {
         article.category = category;
+        return this;
+    }
+
+    public ArticleBuilder setWhitelist(Boolean category) {
+        article.isWhitelist = category;
+        return this;
+    }
+
+    public ArticleBuilder setBlacklist(Boolean category) {
+        article.isBlacklist = category;
         return this;
     }
 

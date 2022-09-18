@@ -1,37 +1,54 @@
 <aura:component description="ListSearchNews" implements="flexipage:availableForAllPageTypes"
                 controller="NewsAppController" access="global">
+    <aura:registerEvent name="changeVisibilityToListEvent" type="c:ChangeVisibilityToListEvent"/>
     <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
+    <aura:handler event="c:ShowBlacklistArticles" action="{!c.getBlacklistArticles}"/>
+    <aura:handler event="c:ShowWhitelistArticles" action="{!c.getWhitelistArticles}"/>
     <aura:handler name="init" value="this" action="{!c.doInit}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
     <aura:attribute name="comments" type="Comment__c[]"/>
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
     <aura:attribute name="selectedArticle" type="Article"/>
     <aura:attribute name="newComment" type="String"/>
+    <aura:attribute name="listTitle" type="String"/>
     <aura:attribute name="isSearchListNotEmpty" type="Boolean" default="false"/>
     <aura:attribute name="message" type="String" default=""/>
     <aura:attribute name="showApproveForComment" type="Boolean" default="true"/>
+    <aura:attribute name="articleInWhitelist" type="Boolean" default="false"/>
+    <aura:attribute name="articleInBlacklist" type="Boolean" default="false"/>
     <aura:attribute name="userInfo" type="User"/>
+    <aura:if isTrue="{!v.toggleSpinner}">
+        <lightning:spinner alternativeText="Loading" variant="inverse" size="large"/>
+    </aura:if>
     <div class="slds-is-relative slds-align_absolute-center" style="width:100vw">
         <div style="width:75vw">
             <aura:if isTrue="{!v.isSearchListNotEmpty}">
-                <lightning:card title="News List">
+                <lightning:card title="{!v.listTitle}">
                     <table
                             class="slds-table slds-large-size_large">
                         <thead>
-                        <tr style="cursor:pointer;width:74.9vw"
-                            class="slds-text-body_regular slds-large-size_large slds-grid">
-                            <th class="slds-grid slds-has-flexi-truncate">
+                        <tr style="cursor:pointer;width:74.8vw"
+                            class="slds-text-body_regular slds-large-size_medium slds-grid slds-m-right_none">
+                            <th class="slds-grid slds-has-flexi-truncate slds-size_2-of-4">
                                 <div class="slds-truncate"
                                      title="Title">
                                     Title
                                 </div>
                             </th>
-                            <th class="slds-grid slds-has-flexi-truncate">
+                            <th class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
+                                <div class="slds-truncate"
+                                     title="Author">
+                                    Author
+                                </div>
+                            </th>
+                            <th class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
                                 <div class="slds-truncate"
                                      title="Published at">
                                     Published at
                                 </div>
                             </th>
+
                         </tr>
                         </thead>
                         <tbody>
@@ -39,16 +56,22 @@
                                 items="{!v.searchListFromHandleSearchListEvent}"
                                 var="item"
                                 indexVar="index">
-                            <tr style="cursor:pointer;width:74.9vw"
-                                class="slds-text-body_regular slds-large-size_large slds-grid"
+                            <tr style="cursor:pointer;width:74.8vw"
+                                class="slds-text-body_regular slds-large-size_large slds-grid slds-m-right_none"
                                 data-record="{!index}"
                                 onclick="{!c.selectArticle}">
-                                <td class="slds-grid slds-has-flexi-truncate">
+                                <td class="slds-grid slds-has-flexi-truncate slds-size_2-of-4">
                                     <div class="slds-truncate"
                                          title="Title">
                                      {!item.title}</div>
                                 </td>
-                                <td class="slds-grid slds-has-flexi-truncate">
+                                <td class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
+                                    <div class="slds-truncate"
+                                         title="Author">
+                                     {!item.author}</div>
+                                </td>
+
+                                <td class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
                                     <div class="slds-truncate"
                                          title="Published at">
                                      {!item.publishedAt}</div>
@@ -177,14 +200,34 @@
                                           label="Cancel"
                                           title="Cancel"
                                           onclick="{! c.closeModel }"/>
-                        <lightning:button variant="destructive"
-                                          label="Add To Blacklist"
-                                          title="Add To Blacklist"
-                                          onclick="{!c.addToBlacklist}"/>
-                        <lightning:button variant="success"
-                                          label="Add To Favorite"
-                                          title="Add To Favorite"
-                                          onclick="{!c.addToBlacklist}"/>
+<!--                        tutaj aura if is in blacklist show remove button the same in whitelist-->
+                        <aura:if isTrue="{!v.selectedArticle.isWhitelist}">
+                            <lightning:button variant="destructive"
+                                              label="Remove From Whitelist"
+                                              title="Remove From Whitelist"
+                                              onclick="{!c.removeFromWhitelist}"/>
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!v.selectedArticle.isBlacklist}">
+                                    <lightning:button variant="destructive"
+                                                      label="Remove From Blacklist"
+                                                      title="Remove From Blacklist"
+                                                      onclick="{!c.removeFromBlacklist}"/>
+                                    <aura:set attribute="else">
+                                        <lightning:button variant="destructive"
+                                                          label="Add To Blacklist"
+                                                          title="Add To Blacklist"
+                                                          onclick="{!c.addToBlacklist}"/>
+                                        <lightning:button variant="success"
+                                                          label="Add To Favorite"
+                                                          title="Add To Favorite"
+                                                          onclick="{!c.addToWhitelist}"/>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:set>
+                        </aura:if>
+
+
+
 
                     </footer>
                 </div>

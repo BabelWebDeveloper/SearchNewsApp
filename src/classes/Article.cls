@@ -1,6 +1,6 @@
 public with sharing class Article {
     @AuraEnabled
-    public String idString;
+    public String id;
     @AuraEnabled
     public Source source;
     @AuraEnabled
@@ -26,4 +26,9 @@ public with sharing class Article {
     public String category;
     @AuraEnabled
     public List<Comment> comments;
+    @AuraEnabled
+    public Boolean isBlacklist;
+    @AuraEnabled
+    public Boolean isWhitelist;
+
 }
