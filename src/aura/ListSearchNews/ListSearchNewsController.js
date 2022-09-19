@@ -147,7 +147,69 @@
         return;
     },
     hideSpinner : function(component,event,helper){
-            component.set("v.toggleSpinner", false)
-        },
+        component.set("v.toggleSpinner", false)
+    },
+    first : function(component, event, helper){
+        let oppList = component.get("v.searchListFromHandleSearchListEvent");
+        let pageSize = component.get("v.pageSize");
+        let paginationList = [];
+        for(let i=0; i< pageSize; i++){
+            paginationList.push(oppList[i]);
+        }
+        component.set("v.paginationList", paginationList);
+    },
+//
+    last : function(component, event, helper){
+        let oppList = component.get("v.searchListFromHandleSearchListEvent");
+        let pageSize = component.get("v.pageSize");
+        let totalSize = component.get("v.totalSize");
+        let paginationList = [];
+        for(let i=totalSize-pageSize+1; i< totalSize; i++){
+            paginationList.push(oppList[i]);
+        }
+        component.set("v.paginationList", paginationList);
+    },
+//
+    next : function(component, event, helper){
+        let oppList = component.get("v.searchListFromHandleSearchListEvent");
+        let end = component.get("v.end");
+        let start = component.get("v.start");
+        let pageSize = component.get("v.pageSize");
+        let paginationList = [];
+        let counter = 0;
+        for(let i=end+1; i<end+pageSize+1; i++){
+            if(oppList.length > end){
+                paginationList.push(oppList[i]);
+                counter ++;
+            }
+        }
+        start = start + counter;
+        end = end + counter;
+        component.set("v.start",start);
+        component.set("v.end",end);
+        component.set("v.paginationList", paginationList);
+    },
+
+    previous : function(component, event, helper){
+        let oppList = component.get("v.searchListFromHandleSearchListEvent");
+        let end = component.get("v.end");
+        let start = component.get("v.start");
+        let pageSize = component.get("v.pageSize");
+        let paginationList = [];
+        let counter = 0;
+        for(let i = start - pageSize; i < start ; i++){
+            if(i > -1) {
+                paginationList.push(oppList[i]);
+                counter ++;
+            } else {
+                start++;
+            }
+        }
+        start = start - counter;
+        end = end - counter;
+        component.set("v.start",start);
+        component.set("v.end",end);
+        component.set("v.paginationList", paginationList);
+    },
 
 })

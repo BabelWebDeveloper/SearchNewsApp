@@ -1,4 +1,10 @@
-
+.THIS{background-color: }
 .THIS.slds-spinner {
     height: 150vh;
+}
+.THIS .test{
+    background-color: ;
+}
+.THIS .test1{
+    font-size: px;
 }

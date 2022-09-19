@@ -1,0 +1,27 @@
+/**
+ * Created by przemyslaw.babel on 19.09.2022.
+ */
+.THIS {}
+
+.THIS .recordsRow{
+    line-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+.THIS .singleRecordRow{
+    padding: 0;
+    max-height: 20px;
+}
+.THIS .noBorder{
+    border: none;
+    box-shadow: none;
+}
+.THIS .slds-card__header{
+    border: none;
+}
+.THIS .slds-card__body{
+    border: none;
+}
+.THIS .modalFooter{
+    width: 100%;
+}

@@ -8,12 +8,23 @@
     <aura:registerEvent name="afterSearchChangeCssInLayout" type="c:ChangeCssInLayoutNewsEvent"/>
     <aura:registerEvent name="showBlacklistArticles" type="c:ShowBlacklistArticles"/>
     <aura:registerEvent name="showWhitelistArticles" type="c:ShowWhitelistArticles"/>
-<!--    <aura:registerEvent name="changeVisibilityToListEvent" type="c:ChangeVisibilityToListEvent"/>-->
     <aura:attribute name="searchKeyWord" type="String"/>
     <aura:attribute name="searchCategory" type="String"/>
     <aura:attribute name="category" type="String"/>
     <aura:attribute name="userInfo" type="User"/>
     <aura:attribute name="showNavigationMenu" type="boolean" default="true"/>
+    <aura:attribute name="isModalOpen" type="Boolean" default="false"/>
+    <aura:attribute name="imageUrl" type="String" access="global" default="none"/>
+    <aura:attribute name="newArticleTitle" type="String" access="global" default=""/>
+    <aura:attribute name="newArticleDescription" type="String" access="global" default=""/>
+    <aura:attribute name="newArticleContent" type="String" access="global" default=""/>
+    <aura:attribute name="newArticleAuthor" type="String" access="global" default=""/>
+
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg']" />
+    <aura:attribute name="multiple" type="Boolean" default="true" />
+    <aura:attribute name="disabled" type="Boolean" default="true" />
+    <aura:attribute name="recordId" type="String" />
+
     <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler name="init" action="{!c.onInit}" value="{!this}"/>
     <aura:handler event="c:SearchAgain" action="{!c.search}"/>
@@ -22,59 +33,39 @@
     </aura:if>
     <div class="c-container slds-m-bottom_large">
         <lightning:layout pullToBoundary="medium" class="slds-grid_vertical-align-end">
-            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_5-of-12">
-                <div class="custom-box">
-                    <div class="search">
-                        <div class="search-wrapper">
-                            <form class="search-form">
-                                <div class="search-input-wrapper">
-                                    <lightning:input
-                                            label="Search"
-                                            class="search-input slds-size_medium slds-float_right"
-                                            type="text"
-                                            placeholder="News Search"
-                                            value="{!v.searchKeyWord}"
-                                    />
-                                </div>
-                                <input type="hidden" name="language" value="en"/>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-float_right slds-size_2-of-12 slds-m-left_large">
+                <lightning:button class="slds-size_1-of-2" label="Top news" title="Popular news" onclick="{! c.refreshView }"/>
+            </lightning:layoutItem>
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-float_right slds-size_5-of-12">
+                <lightning:input
+                        label="Search"
+                        class="search-input slds-size_1-of-1 slds-float_right"
+                        type="text"
+                        placeholder="News Search"
+                        value="{!v.searchKeyWord}"
+                />
+                <input type="hidden" name="language" value="en"/>
             </lightning:layoutItem>
 
-            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_5-of-12">
-                <div class="custom-box">
-                    <div class="search">
-                        <div class="search-wrapper">
-                            <form class="search-form">
-                                <div class="search-input-wrapper">
-                                    <div class="row">
-                                        <p class="title">Select category</p>
-                                        <ui:inputSelect class="single" aura:id="InputSelectSingle"
-                                                        change="{!c.onSingleSelectChange}">
-                                            <ui:inputSelectOption text="Business" value="true"/>
-                                            <ui:inputSelectOption text="Entertainment"/>
-                                            <ui:inputSelectOption text="General"/>
-                                            <ui:inputSelectOption text="Health"/>
-                                            <ui:inputSelectOption text="Science"/>
-                                            <ui:inputSelectOption text="Sports"/>
-                                            <ui:inputSelectOption text="Technology"/>
-                                        </ui:inputSelect>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="language" value="en"/>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_2-of-12">
+                <p class="title">Select category</p>
+                <ui:inputSelect class="" aura:id="InputSelectSingle"
+                                change="{!c.onSingleSelectChange}">
+                    <ui:inputSelectOption text="Business" value="true"/>
+                    <ui:inputSelectOption text="Entertainment"/>
+                    <ui:inputSelectOption text="General"/>
+                    <ui:inputSelectOption text="Health"/>
+                    <ui:inputSelectOption text="Science"/>
+                    <ui:inputSelectOption text="Sports"/>
+                    <ui:inputSelectOption text="Technology"/>
+                </ui:inputSelect>
             </lightning:layoutItem>
 
             <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_2-of-12">
                 <div class="c-container">
-                    <lightning:layout verticalAlign="stretch" multipleRows="true" class="slds-size_1-of-3">
+                    <lightning:layout verticalAlign="stretch" multipleRows="true" class="slds-size_1-of-1 ">
                         <lightning:layoutItem flexibility="auto" class="custom-box slds-align_absolute-center">
-                            <div class="custom-box">
+                            <div class="custom-box slds-p-horizontal_medium">
                                 <lightning:buttonIcon
                                         onclick="{!c.search}"
                                         iconName="utility:search"
@@ -83,13 +74,37 @@
                                         iconClass="dark" title="Search"
                                         size="large"/>
                             </div>
-                        </lightning:layoutItem>
-                        <lightning:layoutItem flexibility="auto" class="custom-box slds-size_1-of-3">
-                                <lightning:buttonMenu alternativeText="Show menu" variant="container" onselect="{! c.handleSelect }">
-                                    <lightning:menuItem value="popular" label="Popular news" />
-                                    <lightning:menuItem value="blacklist" label="Blacklist" />
-                                    <lightning:menuItem value="whitelist" label="Whitelist" />
-                                </lightning:buttonMenu>
+                            <div class="custom-box slds-p-horizontal_medium">
+                                <lightning:buttonIcon
+                                        onclick="{!c.searchWhitelist}"
+                                        iconName="utility:bookmark_alt"
+                                        variant="bare"
+                                        alternativeText="Favourites"
+                                        iconClass="dark" title="Favourites"
+                                        size="large"/>
+                            </div>
+                            <div class="custom-box slds-p-horizontal_medium">
+                                <lightning:buttonIcon
+                                        onclick="{!c.searchBlacklist}"
+                                        iconName="utility:ban"
+                                        variant="bare"
+                                        alternativeText="Blacklist"
+                                        iconClass="dark" title="Blacklist"
+                                        size="large"/>
+                            </div>
+                            <div class="custom-box slds-p-horizontal_medium">
+                                <lightning:buttonIcon
+                                        onclick="{!c.addNewArticle}"
+                                        iconName="utility:add"
+                                        variant="bare"
+                                        alternativeText="Add New Article"
+                                        iconClass="dark" title="Add New Article"
+                                        size="large"/>
+                            </div>
+<!--                            <div class="custom-box slds-p-horizontal_medium">-->
+<!--                                -->
+<!--                            </div>-->
+
                         </lightning:layoutItem>
                     </lightning:layout>
                 </div>
@@ -97,4 +112,67 @@
             </lightning:layoutItem>
         </lightning:layout>
     </div>
+
+    <aura:if isTrue="{!v.isModalOpen}">
+        <section
+                role="dialog"
+                tabindex="-1"
+                aria-labelledby="modal-heading-01"
+                aria-modal="true"
+                aria-describedby="modal-content-id-1"
+                class="slds-modal slds-fade-in-open slds-align_absolute-center"
+                style="width:100vw;">
+            <div class="c-container slds-is-absolute slds-theme_default" style="width:80vw;">
+                <header class="slds-modal__header slds-p-horizontal_none">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01"
+                        class="slds-text-heading_small slds-hyphenate">Create New Article</h2>
+                </header>
+                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
+                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
+                        <lightning:input type="text" name="title" label="Title" value="{!v.newArticleTitle}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
+                        <lightning:textarea name="description" label="Description" value="{!v.newArticleDescription}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
+                        <lightning:textarea name="content" label="Content" value="{!v.newArticleContent}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
+                        <lightning:input type="text" name="author" label="Author"  value="{!v.newArticleAuthor}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
+                        <div class="pictureContainer">
+                            <aura:if isTrue="{!v.imageUrl == 'none'}">
+                                <div class="inputPictureContainer">
+                                    <span class="uploadText">Upload movie poster</span>
+                                    <lightning:fileUpload name="fileUploader" multiple="false"
+                                                          accept=".png, .jpg, .jpeg" onuploadfinished="{!c.handleUploadFinished}"/>
+                                </div>
+                            </aura:if>
+                            <aura:if isTrue="{!v.imageUrl != 'none'}">
+                                <img class="picture" src="{!v.imageUrl}"/>
+                            </aura:if>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                <footer class="slds-modal__footer slds-align_absolute-center modalFooter">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{!c.closeModel}"/>
+                    <lightning:button variant="neutral"
+                                      label="Save"
+                                      title="Save"
+                                      onclick="{!c.saveNewArticle}"/>
+
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
 </aura:component>

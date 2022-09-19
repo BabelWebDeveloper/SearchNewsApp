@@ -495,6 +495,31 @@ public with sharing class NewsAppController {
         delete articleToRemove;
     }
 
+    @AuraEnabled
+    public static String getPictureUrl(String id) {
+        ContentVersion version = [SELECT Id FROM ContentVersion WHERE ContentDocumentId =: id LIMIT 1];
+        return URL.getSalesforceBaseUrl().toExternalForm() + '/sfc/servlet.shepherd/version/download/' + version.Id;
+    }
+
+    @AuraEnabled
+    public static void saveArticle(String imageUrl,
+            String title,
+            String description,
+            String content,
+            String author) {
+        try {
+            ArticleBuilderObject builderObject = new ArticleBuilderObject();
+            builderObject.setUrlToImage(imageUrl);
+            builderObject.setTitle(title);
+            builderObject.setDescription(description);
+            builderObject.setContent(content);
+            builderObject.setAuthor(author);
+            Article__c article = builderObject.getArticle();
+            insert article;
+        } catch (Exception e){
+            System.debug(e);
+        }
+    }
 
 }
 //todo Zmienić układ modala: zdjęcie po lewej, po prawej description i content, po kliknięciu show comments pojawiają się komentarze i możliwość ich dodania

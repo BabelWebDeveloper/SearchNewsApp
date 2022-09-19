@@ -1,11 +1,11 @@
 <aura:component description="ListSearchNews" implements="flexipage:availableForAllPageTypes"
                 controller="NewsAppController" access="global">
     <aura:registerEvent name="changeVisibilityToListEvent" type="c:ChangeVisibilityToListEvent"/>
-    <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
-    <aura:handler event="c:ShowBlacklistArticles" action="{!c.getBlacklistArticles}"/>
-    <aura:handler event="c:ShowWhitelistArticles" action="{!c.getWhitelistArticles}"/>
-    <aura:handler name="init" value="this" action="{!c.doInit}"/>
-    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+<!--    <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>-->
+<!--    <aura:handler event="c:ShowBlacklistArticles" action="{!c.getBlacklistArticles}"/>-->
+<!--    <aura:handler event="c:ShowWhitelistArticles" action="{!c.getWhitelistArticles}"/>-->
+<!--    <aura:handler name="init" value="this" action="{!c.doInit}"/>-->
+<!--    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>-->
     <aura:attribute name="searchListFromHandleSearchListEvent" type="Article__c[]"/>
     <aura:attribute name="comments" type="Comment__c[]"/>
     <aura:attribute name="isModalOpen" type="boolean" default="false"/>
@@ -18,9 +18,20 @@
     <aura:attribute name="articleInWhitelist" type="Boolean" default="false"/>
     <aura:attribute name="articleInBlacklist" type="Boolean" default="false"/>
     <aura:attribute name="userInfo" type="User"/>
+
+    <aura:attribute name="paginationList" type="Article__c[]"/>
+    <aura:attribute name="pageSize" type="Integer" default="5"/>
+    <aura:attribute name="totalSize" type="Integer"/>
+    <aura:attribute name="start" type="Integer"/>
+    <aura:attribute name="end" type="Integer"/>
     <aura:if isTrue="{!v.toggleSpinner}">
         <lightning:spinner alternativeText="Loading" variant="inverse" size="large"/>
     </aura:if>
+    <lightning:button label="Search" onclick="{!c.search}"/>
+    <lightning:button label="First" disabled="{!v.start == 0}" onclick="{!c.first}"/>
+    <lightning:button label="Previous" disabled="{!v.start == 0}" onclick="{!c.previous}"/>
+    <lightning:button label="Next" disabled="{!v.end >= v.totalSize}" onclick="{!c.next}"/>
+    <lightning:button label="Last" disabled="{!v.end >= v.totalSize}" onclick="{!c.last}"/>
     <div class="slds-is-relative slds-align_absolute-center" style="width:100vw">
         <div style="width:75vw">
             <aura:if isTrue="{!v.isSearchListNotEmpty}">
@@ -30,19 +41,25 @@
                         <thead>
                         <tr style="cursor:pointer;width:74.8vw"
                             class="slds-text-body_regular slds-large-size_medium slds-grid slds-m-right_none">
-                            <th class="slds-grid slds-has-flexi-truncate slds-size_2-of-4">
+                            <th class="slds-grid slds-has-flexi-truncate slds-size_2-of-6">
+                                <div class="slds-truncate"
+                                     title="Image">
+                                </div>
+                            </th>
+                            <th class="slds-grid slds-has-flexi-truncate slds-size_2-of-6">
                                 <div class="slds-truncate"
                                      title="Title">
                                     Title
                                 </div>
                             </th>
-                            <th class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
+
+                            <th class="slds-grid slds-has-flexi-truncate slds-size_1-of-6">
                                 <div class="slds-truncate"
                                      title="Author">
                                     Author
                                 </div>
                             </th>
-                            <th class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
+                            <th class="slds-grid slds-has-flexi-truncate slds-size_1-of-6">
                                 <div class="slds-truncate"
                                      title="Published at">
                                     Published at
@@ -53,28 +70,37 @@
                         </thead>
                         <tbody>
                         <aura:iteration
-                                items="{!v.searchListFromHandleSearchListEvent}"
+                                items="{!v.paginationList}"
                                 var="item"
                                 indexVar="index">
                             <tr style="cursor:pointer;width:74.8vw"
                                 class="slds-text-body_regular slds-large-size_large slds-grid slds-m-right_none"
                                 data-record="{!index}"
                                 onclick="{!c.selectArticle}">
-                                <td class="slds-grid slds-has-flexi-truncate slds-size_2-of-4">
-                                    <div class="slds-truncate"
+                                <div class="
+                                    slds-col
+                                    slds-size_2-of-6
+                                    slds-align_absolute-center
+                                    slds-p-horizontal_none
+                                    slds-p-vertical_none"
+                                     style="top:0">
+                                    <img src="{!item.urlToImage}" style="float: left;width: 200px; height: 200px; object-fit: cover;"/>
+                                </div>
+                                <td class="slds-grid slds-has-flexi-truncate slds-size_2-of-6">
+                                    <div class="slds-truncate test2"
                                          title="Title">
-                                     {!item.title}</div>
+                                    {!item.title}</div>
                                 </td>
-                                <td class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
-                                    <div class="slds-truncate"
+                                <td class="slds-grid slds-has-flexi-truncate slds-size_1-of-6">
+                                    <div class="slds-truncate test2"
                                          title="Author">
-                                     {!item.author}</div>
+                                    {!item.author}</div>
                                 </td>
 
-                                <td class="slds-grid slds-has-flexi-truncate slds-size_1-of-4">
-                                    <div class="slds-truncate"
+                                <td class="slds-grid slds-has-flexi-truncate slds-size_1-of-6">
+                                    <div class="slds-truncate test2"
                                          title="Published at">
-                                     {!item.publishedAt}</div>
+                                    {!item.publishedAt}</div>
                                 </td>
                             </tr>
                         </aura:iteration>

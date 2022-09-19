@@ -1,4 +1,4 @@
-<aura:component implements="flexipage:availableForAllPageTypes">
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable">
     <ltng:require styles="{!$Resource.Noheader}"></ltng:require>
     <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler event="c:LayoutSpinner" action="{!c.afterSearchSpinner}"/>
@@ -13,7 +13,7 @@
         </aura:if>
         <lightning:layout>
             <lightning:layoutItem flexibility="auto">
-                <div class="custom-box">
+                <div class="test">
                     <c:SearchNews/>
                 </div>
             </lightning:layoutItem>
@@ -21,7 +21,7 @@
         <lightning:layout>
             <lightning:layoutItem flexibility="auto">
                 <aura:if isTrue="{!v.showSelectedArticles}">
-                    <c:ListSearchNews/>
+                    <c:testpagination/>
                     <aura:set attribute="else">
                         <div class="custom-box">
                             <c:PopularNews/>
@@ -31,12 +31,12 @@
 
             </lightning:layoutItem>
         </lightning:layout>
-        <lightning:layout class="slds-hidden">
-            <lightning:layoutItem flexibility="auto">
-                <div class="custom-box slds-align_absolute-center">
-                    <c:ListSearchNews/>
-                </div>
-            </lightning:layoutItem>
-        </lightning:layout>
+<!--        <lightning:layout>-->
+<!--            <lightning:layoutItem>-->
+<!--                <div class="custom-box">-->
+<!--                    <c:testpagination/>-->
+<!--                </div>-->
+<!--            </lightning:layoutItem>-->
+<!--        </lightning:layout>-->
     </div>
 </aura:component>
