@@ -141,6 +141,9 @@
             return;
         });
         $A.enqueueAction( saveArticleBackend );
+        var a = component.get('c.closeModel');
+                $A.enqueueAction(a);
+
     },
     refreshView : function (component, event, helper){
         $A.get('e.force:refreshView').fire();
