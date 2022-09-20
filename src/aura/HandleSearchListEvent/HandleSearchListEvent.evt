@@ -1,3 +1,4 @@
 <aura:event type="APPLICATION" description="HandleSearchListEvent">
     <aura:attribute name="articles" type="Article__c[]"/>
+    <aura:attribute name="category" type="String"/>
 </aura:event>

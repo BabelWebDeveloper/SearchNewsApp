@@ -10,7 +10,7 @@
     <aura:registerEvent name="showWhitelistArticles" type="c:ShowWhitelistArticles"/>
     <aura:attribute name="searchKeyWord" type="String"/>
     <aura:attribute name="searchCategory" type="String"/>
-    <aura:attribute name="category" type="String"/>
+    <aura:attribute name="category" type="String" default="Business"/>
     <aura:attribute name="userInfo" type="User"/>
     <aura:attribute name="showNavigationMenu" type="boolean" default="true"/>
     <aura:attribute name="isModalOpen" type="Boolean" default="false"/>
@@ -24,6 +24,7 @@
     <aura:attribute name="multiple" type="Boolean" default="true" />
     <aura:attribute name="disabled" type="Boolean" default="true" />
     <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="categoryNew" type="String" default="Business"/>
 
     <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler name="init" action="{!c.onInit}" value="{!this}"/>
@@ -145,11 +146,24 @@
                     <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
                         <lightning:input type="text" name="author" label="Author"  value="{!v.newArticleAuthor}"/>
                     </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium" class="slds-size_2-of-12">
+                        <p class="title">Select category</p>
+                        <ui:inputSelect class="" aura:id="InputSelectSingleNew"
+                                        change="{!c.setCategoryForNewArticle}">
+                            <ui:inputSelectOption text="Business" value="true"/>
+                            <ui:inputSelectOption text="Entertainment"/>
+                            <ui:inputSelectOption text="General"/>
+                            <ui:inputSelectOption text="Health"/>
+                            <ui:inputSelectOption text="Science"/>
+                            <ui:inputSelectOption text="Sports"/>
+                            <ui:inputSelectOption text="Technology"/>
+                        </ui:inputSelect>
+                    </lightning:layoutItem>
                     <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
                         <div class="pictureContainer">
                             <aura:if isTrue="{!v.imageUrl == 'none'}">
                                 <div class="inputPictureContainer">
-                                    <span class="uploadText">Upload movie poster</span>
+                                    <span class="uploadText">Upload News Image</span>
                                     <lightning:fileUpload name="fileUploader" multiple="false"
                                                           accept=".png, .jpg, .jpeg" onuploadfinished="{!c.handleUploadFinished}"/>
                                 </div>

@@ -89,7 +89,6 @@ public with sharing class NewsAppController {
 
     @AuraEnabled
     public static List<Article> showBlacklistArticles() {
-        System.debug('backend ShowSelectedArticlesEvent work');
         List<Article__c> blacklistArticles = [
                 SELECT
                         Description__c,
@@ -296,7 +295,9 @@ public with sharing class NewsAppController {
             String url,
             String urlToImage,
             Datetime publishedAt,
-            String content) {
+            String content,
+            String category) {
+        System.debug('addArticleToBlacklist category: ' + category);
         try {
             if (id == null || id == '') {
                 ArticleBuilderObject builder = new ArticleBuilderObject();
@@ -308,6 +309,7 @@ public with sharing class NewsAppController {
                 builder.setUrl(url);
                 builder.setUrlToImage(urlToImage);
                 builder.setSource(source);
+                builder.setCategory(category);
                 Article__c article = builder.getArticle();
                 article.IsBlackList__c = true;
                 insert article;
@@ -340,7 +342,9 @@ public with sharing class NewsAppController {
             String url,
             String urlToImage,
             Datetime publishedAt,
-            String content) {
+            String content,
+            String category) {
+        System.debug('addArticleToWhitelist category: ' + category);
         try {
             if (id == null || id == '') {
                 ArticleBuilderObject builder = new ArticleBuilderObject();
@@ -352,17 +356,15 @@ public with sharing class NewsAppController {
                 builder.setUrl(url);
                 builder.setUrlToImage(urlToImage);
                 builder.setSource(source);
+                builder.setCategory(category);
                 Article__c article = builder.getArticle();
                 article.IsWhiteList__c = true;
                 insert article;
-                System.debug('addArticleToWhitelist, id jest nullem, NEW article: ' + article);
 
                 Article_From_White_List__c articleToWhiteList = new Article_From_White_List__c();
                 articleToWhiteList.Article_Parent__c = article.Id;
                 insert articleToWhiteList;
-                System.debug(articleToWhiteList);
             } else {
-                System.debug('addArticleToWhitelist id nie jest nullem: ' + id);
                 Article__c article = [SELECT Id, IsBlackList__c FROM Article__c WHERE Id = :id];
                 if (article.IsBlackList__c != true) {
                     article.IsWhiteList__c = true;
@@ -370,7 +372,6 @@ public with sharing class NewsAppController {
                     Article_From_White_List__c articleToWhiteList = new Article_From_White_List__c();
                     articleToWhiteList.Article_Parent__c = article.Id;
                     insert articleToWhiteList;
-                    System.debug('article in white list: ' + articleToWhiteList);
                 }
             }
         } catch (Exception e) {
@@ -398,10 +399,10 @@ public with sharing class NewsAppController {
             String urlToImage,
             Datetime publishedAt,
             String content,
-            String comment) {
+            String comment,
+            String category) {
         try {
             if (id == null || id == '') {
-                System.debug('id jest nullem: ' + id);
                 ArticleBuilderObject builder = new ArticleBuilderObject();
                 builder.setAuthor(author);
                 builder.setContent(content);
@@ -411,21 +412,18 @@ public with sharing class NewsAppController {
                 builder.setUrl(url);
                 builder.setUrlToImage(urlToImage);
                 builder.setSource(source);
+                builder.setCategory(category);
                 Article__c article = builder.getArticle();
                 insert article;
-                System.debug('article.id: ' + article.id);
 
                 Comment__c newComment = new Comment__c();
                 newComment.CommentText__c = comment;
                 newComment.Article_Parent__c = article.id;
                 insert newComment;
-                System.debug('newComment: ' + newComment);
             } else {
-                System.debug('id nie jest nullem: ' + id);
                 Comment__c newComment = new Comment__c(
                         CommentText__c = comment,
                         Article_Parent__c = id);
-                System.debug('newComment: ' + newComment);
                 insert newComment;
             }
         } catch (Exception e) {
@@ -450,6 +448,8 @@ public with sharing class NewsAppController {
                         IsBlackList__c,
                         IsWhiteList__c
                 FROM Article__c
+                WHERE Id NOT IN (SELECT Article_Parent__c FROM Article_From_Black_List__c)
+                AND OwnerId IN (SELECT Id FROM User)
                 LIMIT 3
         ];
         return sObjectToClassArticle(articleObjects);
@@ -506,7 +506,8 @@ public with sharing class NewsAppController {
             String title,
             String description,
             String content,
-            String author) {
+            String author,
+            String category) {
         try {
             ArticleBuilderObject builderObject = new ArticleBuilderObject();
             builderObject.setUrlToImage(imageUrl);
@@ -514,6 +515,7 @@ public with sharing class NewsAppController {
             builderObject.setDescription(description);
             builderObject.setContent(content);
             builderObject.setAuthor(author);
+            builderObject.setCategory(category);
             Article__c article = builderObject.getArticle();
             insert article;
         } catch (Exception e){

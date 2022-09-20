@@ -214,8 +214,10 @@
                                         </aura:set>
                                     </aura:if>
                                     <aura:if isTrue="{!v.showApproveForComment}">
-                                        <lightning:button variant="success" label="Submit" title="Submit"
-                                                          onclick="{! c.saveNewComment }" class="slds-size_small"/>
+                                        <div class="slds-align_absolute-center">
+                                            <lightning:button variant="neutral" label="Submit" title="Submit"
+                                                              onclick="{! c.saveNewComment }" class="slds-size_small"/>
+                                        </div>
                                     </aura:if>
                                 </div>
                             </div>
@@ -234,7 +236,7 @@
                                               onclick="{!c.removeFromWhitelist}"/>
                             <aura:set attribute="else">
                                 <aura:if isTrue="{!v.selectedArticle.isBlacklist}">
-                                    <lightning:button variant="destructive"
+                                    <lightning:button variant="neutral"
                                                       label="Remove From Blacklist"
                                                       title="Remove From Blacklist"
                                                       onclick="{!c.removeFromBlacklist}"/>
@@ -243,7 +245,7 @@
                                                           label="Add To Blacklist"
                                                           title="Add To Blacklist"
                                                           onclick="{!c.addToBlacklist}"/>
-                                        <lightning:button variant="success"
+                                        <lightning:button variant="neutral"
                                                           label="Add To Favorite"
                                                           title="Add To Favorite"
                                                           onclick="{!c.addToWhitelist}"/>

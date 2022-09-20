@@ -8,6 +8,12 @@
         component.set( "v.category", selectCmp.get("v.value") );
         return;
     },
+    setCategoryForNewArticle: function(component) {
+        let selectCmp = component.find("InputSelectSingleNew");
+        component.set( "v.categoryNew", selectCmp.get("v.value") );
+        return;
+    },
+
     search : function (component, event, helper) {
         let searchKeyWord = component.get( "v.searchKeyWord" );
         let searchCategory = component.get( "v.category" );
@@ -26,7 +32,6 @@
     },
 
     searchBlacklist : function (component, event, helper) {
-        console.log('searchBlacklist');
         let searchKeyWord = component.get( "v.searchKeyWord" );
         let searchCategory = component.get( "v.category" );
         let delayMillis = 500;
@@ -40,12 +45,10 @@
                     eventSpinner.fire();
         let changeVisibilityToListEvent = $A.get("e.c:ChangeVisibilityToListEvent");
                     changeVisibilityToListEvent.fire();
-                    console.log('searchBlacklist still work');
                     return;
     },
 
     searchWhitelist : function (component, event, helper) {
-        console.log('searchWhitelist');
         let searchKeyWord = component.get( "v.searchKeyWord" );
         let searchCategory = component.get( "v.category" );
         let delayMillis = 500;
@@ -59,7 +62,6 @@
                     eventSpinner.fire();
         let changeVisibilityToListEvent = $A.get("e.c:ChangeVisibilityToListEvent");
                     changeVisibilityToListEvent.fire();
-                    console.log('searchWhitelist still work');
                     return;
     },
 
@@ -122,6 +124,7 @@
         let description = component.get("v.newArticleDescription");
         let content = component.get("v.newArticleContent");
         let author = component.get("v.newArticleAuthor");
+        let category = component.get("v.categoryNew");
 
         let saveArticleBackend = component.get( "c.saveArticle" );
 
@@ -131,13 +134,13 @@
             description: description,
             title: title,
             content: content,
-            author: author
+            author: author,
+            category: category
         });
 
         saveArticleBackend.setCallback( this, function( response ) {
             let responseSearchList = response.getReturnValue();
             let responseStatus = response.getState();
-            console.log(responseSearchList);
             return;
         });
         $A.enqueueAction( saveArticleBackend );

@@ -15,13 +15,13 @@
         });
 
         getArticlesFromBackend.setCallback( this, function( response ) {
+            let category = component.get("v.category");
             let responseSearchList = response.getReturnValue();
             let handleSearchListEvent = $A.get( "e.c:HandleSearchListEvent" );
             handleSearchListEvent.setParams({
-                "articles" : responseSearchList
+                "articles" : responseSearchList,
+                "category" : category
             });
-            console.log('search click:')
-            console.log(responseSearchList);
             if(responseSearchList == null){
                 let eventSpinner = $A.get("e.c:LayoutSpinnerClose");
                     eventSpinner.fire();
@@ -41,8 +41,6 @@
             handleSearchListEvent.setParams({
                 "articles" : responseSearchList
             });
-            console.log('search click:')
-            console.log(responseSearchList);
             if(responseSearchList == null){
                 let eventSpinner = $A.get("e.c:LayoutSpinnerClose");
                     eventSpinner.fire();
@@ -62,8 +60,6 @@
             handleSearchListEvent.setParams({
                 "articles" : responseSearchList
             });
-            console.log('search click:')
-            console.log(responseSearchList);
             if(responseSearchList == null){
                 let eventSpinner = $A.get("e.c:LayoutSpinnerClose");
                     eventSpinner.fire();

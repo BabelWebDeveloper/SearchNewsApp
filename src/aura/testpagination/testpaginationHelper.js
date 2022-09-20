@@ -4,7 +4,6 @@
         action.setCallback(this, function(response){
             let state = response.getState();
             let responseSearchList = response.getReturnValue();
-            console.log(responseSearchList);
             if (state === "SUCCESS"){
                 component.set("v.articleList", responseSearchList);
                 component.set("v.totalSize", component.get("v.articleList").length);
@@ -19,7 +18,6 @@
             });
 
         $A.enqueueAction(action);
-        console.log('testHelper work')
     },
     getCommentsHelper: function( component, id ){
         let getCommentsFromBackend = component.get( "c.getComments" );
@@ -33,7 +31,7 @@
         });
         $A.enqueueAction( getCommentsFromBackend );
     },
-    saveCommentHelper: function( component, comment, article ){
+    saveCommentHelper: function( component, comment, article, categoryFromController ){
         let saveCommentBackend = component.get( "c.saveComment" );
 
         let id = article.id;
@@ -45,9 +43,7 @@
         let urlToImage = article.urlToImage;
         let publishedAt = article.publishedAt;
         let content = article.content;
-
-        console.log('saveCommentHelper: '+id);
-        console.log('saveCommentHelper: '+title);
+        let category = categoryFromController;
 
         saveCommentBackend.setParams({
             id: id,
@@ -59,7 +55,8 @@
             urlToImage: urlToImage,
             publishedAt: publishedAt,
             content: content,
-            comment: comment
+            comment: comment,
+            category: category
         });
         saveCommentBackend.setCallback( this, function( response ) {
             let responseSearchList = response.getState();
@@ -71,7 +68,7 @@
             console.log(e);
         }
     },
-    addArticleToBlacklistHelper: function( component, selectedArticle ){
+    addArticleToBlacklistHelper: function( component, selectedArticle, categoryFromController ){
         let addArticleToBlacklistBackend = component.get( "c.addArticleToBlacklist" );
 
         let id = selectedArticle.id;
@@ -83,6 +80,9 @@
         let urlToImage = selectedArticle.urlToImage;
         let publishedAt = selectedArticle.publishedAt;
         let content = selectedArticle.content;
+        let category = categoryFromController;
+
+        console.log('addArticleToBlacklistHelper HELPER category: ' + categoryFromController);
 
         addArticleToBlacklistBackend.setParams({
             id: id,
@@ -93,7 +93,8 @@
             url: url,
             urlToImage: urlToImage,
             publishedAt: publishedAt,
-            content: content
+            content: content,
+            category: category
         });
 
         addArticleToBlacklistBackend.setCallback( this, function( response ) {
@@ -105,9 +106,7 @@
         let eventSpinner = $A.get("e.c:SearchAgain");
         eventSpinner.fire();
     },
-    addArticleToWhitelistHelper: function( component, selectedArticle ){
-        console.log('selectedArticle helper: ' + selectedArticle);
-        console.log('selectedArticle ID helper: ' + selectedArticle.id);
+    addArticleToWhitelistHelper: function( component, selectedArticle, categoryFromController ){
         let addArticleToWhitelistBackend = component.get( "c.addArticleToWhitelist" );
 
         let id = selectedArticle.id;
@@ -119,6 +118,9 @@
         let urlToImage = selectedArticle.urlToImage;
         let publishedAt = selectedArticle.publishedAt;
         let content = selectedArticle.content;
+        let category = categoryFromController;
+
+        console.log('addArticleToWhitelistHelper HELPER category: ' + categoryFromController);
 
         addArticleToWhitelistBackend.setParams({
             id: id,
@@ -129,7 +131,8 @@
             url: url,
             urlToImage: urlToImage,
             publishedAt: publishedAt,
-            content: content
+            content: content,
+            category: category
         });
 
         addArticleToWhitelistBackend.setCallback( this, function( response ) {
@@ -145,7 +148,6 @@
     },
     removeFromWhitelistHelper: function( component, selectedArticle ) {
         let id = selectedArticle.id;
-        console.log('selectedArticleId:' + id);
         let removeFromWhitelistBackend = component.get( "c.removeFromWhitelistBackend" );
         removeFromWhitelistBackend.setParams({
             id: id
@@ -158,7 +160,6 @@
     },
     removeFromBlacklistHelper: function( component, selectedArticle ) {
         let id = selectedArticle.id;
-        console.log('selectedArticleId:' + id);
         let removeFromBlacklistBackend = component.get( "c.removeFromBlacklistBackend" );
         removeFromBlacklistBackend.setParams({
             id: id
@@ -171,13 +172,10 @@
         $A.enqueueAction( removeFromBlacklistBackend );
     },
     getBlacklistArticlesHelper: function( component ) {
-//        console.log('helper event fired');
         let showBlacklistArticlesBackend = component.get( "c.showBlacklistArticles" );
         showBlacklistArticlesBackend.setCallback( this, function( response ) {
             let responseSearchList = response.getReturnValue();
-//            console.log('responseSearchList HELPER: '+responseSearchList.length);
-            component.set("v.articleList", responseSearchList);
-//            console.log(component.get("v.articleList"));
+            component.set("v.articleList", responseSearchList)
             component.set("v.isSearchListNotEmpty", true);
             return;
         });
@@ -189,7 +187,6 @@
         let showWhitelistArticles = component.get( "c.showWhitelistArticles" );
         showWhitelistArticles.setCallback( this, function( response ) {
             let responseSearchList = response.getReturnValue();
-            console.log(responseSearchList);
             component.set("v.articleList", responseSearchList);
             component.set("v.isSearchListNotEmpty", true);
             return;

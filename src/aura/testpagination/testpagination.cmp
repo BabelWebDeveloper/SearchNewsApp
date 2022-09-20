@@ -9,7 +9,7 @@
 
     <aura:attribute name="articleList" type="Article[]"/>
     <aura:attribute name="paginationList" type="Article[]"/>
-    <aura:attribute name="pageSize" type="Integer" default="3"/>
+    <aura:attribute name="pageSize" type="Integer" default="2"/>
     <aura:attribute name="totalSize" type="Integer"/>
     <aura:attribute name="start" type="Integer"/>
     <aura:attribute name="end" type="Integer"/>
@@ -19,11 +19,12 @@
     <aura:attribute name="newComment" type="String"/>
     <aura:attribute name="showApproveForComment" type="Boolean" default="true"/>
     <aura:attribute name="userInfo" type="User"/>
-    <aura:attribute name="listTitle" type="String"/>
+    <aura:attribute name="listTitle" type="String" default="Search List"/>
     <aura:attribute name="articleInWhitelist" type="Boolean" default="false"/>
     <aura:attribute name="articleInBlacklist" type="Boolean" default="false"/>
     <aura:attribute name="toggleSpinner" type="boolean" default="false"/>
     <aura:attribute name="isSearchListNotEmpty" type="Boolean" default="false"/>
+    <aura:attribute name="categoryForSelect" type="String"/>
 
     <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler event="c:LayoutSpinner" action="{!c.afterSearchSpinner}"/>
@@ -34,7 +35,8 @@
     </aura:if>
     <aura:if isTrue="{!v.isSearchListNotEmpty}">
         <table class="">
-            <lightning:card title="{!v.listTitle}" class="noBorder slds-align_absolute-center">
+            <h2 class="slds-size_large slds-align_absolute-center">{!v.listTitle}</h2>
+            <lightning:card title="" class="noBorder slds-align_absolute-center">
                 <table class="slds-table">
                     <tbody class="">
                     <aura:iteration
@@ -43,8 +45,8 @@
                             indexVar="index">
                         <tr style="cursor:pointer;width:100%"
                             class="
-                            slds-border_bottom
-                            slds-p-vertical_medium
+                            slds-box_border
+                            slds-p-around_medium
                             slds-text-body_regular
                             slds-large-size_large
                             slds-grid
@@ -57,12 +59,17 @@
                                     slds-align_absolute-center
                                     slds-p-horizontal_none
                                     slds-p-vertical_none">
-                                <img src="{!item.urlToImage}" style="float: left;width: 200px; height: 200px; object-fit: cover;"/>
+                                <img src="{!item.urlToImage}" style="float: left;width: 200px; height: 200px; object-fit: contain;"/>
                             </td>
                             <td class="slds-size_2-of-3">
                                 <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-truncate">
                                     <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-truncate">
-                                        <p class="slds-truncate">{!item.title}</p>
+                                        <p class="slds-truncate" style="width: 600px"></p>
+                                    </lightning:layoutItem>
+                                </lightning:layout>
+                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-truncate">
+                                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-truncate">
+                                        <p class="slds-truncate" style="width: 600px">{!item.title}</p>
                                     </lightning:layoutItem>
                                 </lightning:layout>
                                 <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
@@ -70,11 +77,11 @@
                                         <p class="">{!item.author}</p>
                                     </lightning:layoutItem>
                                 </lightning:layout>
-                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
-                                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box">
-                                        <p class="">{!item.publishedAt}</p>
-                                    </lightning:layoutItem>
-                                </lightning:layout>
+<!--                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">-->
+<!--                                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box">-->
+<!--                                        <p class="">{!item.publishedAt}</p>-->
+<!--                                    </lightning:layoutItem>-->
+<!--                                </lightning:layout>-->
                             </td>
                         </tr>
                     </aura:iteration>
@@ -132,7 +139,7 @@
 
                                 <h3 class="slds-tile">Comment list:</h3>
                                 <div class="slds-modal__content slds-p-horizontal_none slds-p-vertical_medium"
-                                     style="height:20vh">
+                                     style="height:150px">
                                     <aura:iteration
                                             items="{!v.comments}"
                                             var="comment"
@@ -181,8 +188,11 @@
                                             </aura:set>
                                         </aura:if>
                                         <aura:if isTrue="{!v.showApproveForComment}">
-                                            <lightning:button variant="success" label="Submit" title="Submit"
-                                                              onclick="{! c.saveNewComment }" class="slds-size_small"/>
+                                            <div class="slds-align_absolute-center">
+                                                <lightning:button variant="neutral" label="Submit" title="Submit"
+                                                                  onclick="{! c.saveNewComment }" class="slds-size_small"/>
+                                            </div>
+
                                         </aura:if>
                                     </div>
                                 </div>
@@ -237,8 +247,13 @@
             </aura:if>
             <div class="slds-size_1-of-2 slds-align_absolute-center">
                 <lightning:button label="Previous" disabled="{!v.start == 0}" onclick="{!c.previous}"/>
-                <lightning:button label="Next" disabled="{!v.end >= v.totalSize - 3}" onclick="{!c.next}"/>
+                <lightning:button label="Next" disabled="{!v.end >= v.totalSize - 2}" onclick="{!c.next}"/>
             </div>
         </table>
+        <aura:set attribute="else">
+            <div class="slds-m-left_large">
+                No news searched in selected parameters, try to write different keyword or category.
+            </div>
+        </aura:set>
     </aura:if>
 </aura:component>

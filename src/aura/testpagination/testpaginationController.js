@@ -12,10 +12,10 @@
         return;
     },
     retrieveSearchListFromHandleSearchListEvent : function(component, event, helper){
-        console.log('searchListFromHandleSearchListEvent work');
         let pageSize = component.get("v.pageSize");
         let articlesFromHandleSearchListEvent = event.getParam('articles');
-        console.log('test pagination from event: ' + articlesFromHandleSearchListEvent);
+        let getSearchedCategory = event.getParam('category');
+        component.set("v.categoryForSelect", getSearchedCategory);
         if (articlesFromHandleSearchListEvent.length > 0){
             component.set("v.isSearchListNotEmpty",true);
         } else {
@@ -32,9 +32,8 @@
         }
         component.set("v.paginationList", paginationList);
     },
-//
+
     onSelectChange : function(component, event, helper) {
-//        component.set("v.toggleSpinner", true);
         let selected = component.find("records").get("v.value");
         let paginationList = [];
         let oppList = component.get("v.articleList");
@@ -43,10 +42,9 @@
         }
         component.set("v.paginationList", paginationList);
     },
-//
+
     searchKeyChange: function(component, event) {
         let searchKey =  component.find("input1").get("v.value");
-        console.log(searchKey);
         let action = component.get("c.getByName");
         let keysize = component.get("v.totalSize");
         action.setParams({
@@ -133,8 +131,6 @@
     selectArticle : function(component, event, helper){
         let target = component.get("v.paginationList")[event.currentTarget.dataset.record],
         selectedArticle = JSON.stringify(target);
-        console.log('isBlacklist: '+target.isBlacklist);
-        console.log('isWhitelist: '+target.isWhitelist);
         component.set("v.selectedArticle", target);
         let id = target.id;
         let delayMillis = 500;
@@ -151,18 +147,19 @@
         component.set("v.isModalOpen", false);
         component.set( "v.newComment", '' );
         component.set( "v.showApproveForComment", true );
-//        let eventSpinner = $A.get("e.c:SearchAgain");
-//        eventSpinner.fire();
+        let eventSpinner = $A.get("e.c:SearchAgain");
+        eventSpinner.fire();
         return;
     },
     saveNewComment : function (component, event, helper) {
         let comment = component.get( "v.newComment" );
         let selectedArticle = component.get("v.selectedArticle");
+        let category = component.get("v.categoryForSelect");
         let delayMillis = 500;
         let timeoutId = component.get( "v.searchTimeoutId" );
         clearTimeout( timeoutId );
         timeoutId = setTimeout( $A.getCallback( function() {
-            helper.saveCommentHelper( component, comment, selectedArticle );
+            helper.saveCommentHelper( component, comment, selectedArticle, category );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
         component.set( "v.showApproveForComment", false );
@@ -170,26 +167,28 @@
     },
     addToBlacklist: function(component, event, helper) {
         let selectedArticle = component.get("v.selectedArticle");
+        let category = component.get("v.categoryForSelect");
+        console.log('addToBlacklist CONTROLLER category: ' + category);
         let delayMillis = 500;
         let timeoutId = component.get( "v.searchTimeoutId" );
         clearTimeout( timeoutId );
         timeoutId = setTimeout( $A.getCallback( function() {
-            helper.addArticleToBlacklistHelper( component, selectedArticle );
+            helper.addArticleToBlacklistHelper( component, selectedArticle, category );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
         return;
     },
     addToWhitelist: function(component, event, helper) {
         let selectedArticle = component.get("v.selectedArticle");
-        console.log('selectedArticle before in controller: ' + selectedArticle)
+        let category = component.get("v.categoryForSelect");
+        console.log('addToWhitelist CONTROLLER category: ' + category);
         let delayMillis = 500;
         let timeoutId = component.get( "v.searchTimeoutId" );
         clearTimeout( timeoutId );
         timeoutId = setTimeout( $A.getCallback( function() {
-            helper.addArticleToWhitelistHelper( component, selectedArticle );
+            helper.addArticleToWhitelistHelper( component, selectedArticle, category );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
-        console.log('selectedArticle after in controller: ' + selectedArticle)
         return;
     },
     removeFromWhitelist : function(component, event, helper) {
@@ -201,9 +200,6 @@
             helper.removeFromWhitelistHelper( component, selectedArticle );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
-        console.log('removeFromWhitelist controller STILL work');
-//        var a = component.get('c.getWhitelistArticles');
-//        $A.enqueueAction(a);
         return;
     },
     removeFromBlacklist : function(component, event, helper) {
@@ -222,7 +218,6 @@
     getBlacklistArticles : function(component, event, helper) {
         let emptyList = [];
         component.set("v.articleList", emptyList);
-        console.log('TEST pagination fired from event ')
         component.set('v.toggleSpinner',true);
         let delayMillis = 500;
         let timeoutId = component.get( "v.searchTimeoutId" );
@@ -234,7 +229,6 @@
         component.set("v.articleInWhitelist",false);
         component.set("v.articleInBlacklist",true);
         component.set("v.listTitle", "Articles In Blacklist");
-        console.log('TEST pagination fired from event STILL work');
         return;
     },
     getWhitelistArticles : function(component, event, helper) {
