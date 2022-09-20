@@ -1,7 +1,11 @@
 <aura:component description="PopularNews" controller="NewsAppController">
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:attribute name="popularArticles" type="Article[]"/>
-    <h2 class="slds-align_absolute-center slds-size_large">Popular News</h2>
+    <aura:attribute name="toggleSpinner" type="boolean" default="false"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:if isTrue="{!v.toggleSpinner}">
+        <lightning:spinner alternativeText="Loading" variant="inverse" size="large"/>
+    </aura:if>
     <div class="slds-grid slds-wrap">
         <aura:iteration items="{!v.popularArticles}" var="popularArticle">
             <span class="slds-size_1-of-4 slds-align_absolute-center slds-is-relative" style="height:320px">

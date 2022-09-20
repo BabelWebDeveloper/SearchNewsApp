@@ -3,4 +3,5 @@
  -->
 
 <aura:event type="APPLICATION" description="ChangeVisibilityToListEvent">
+    <aura:attribute name="title" type="String"/>
 </aura:event>

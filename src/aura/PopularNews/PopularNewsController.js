@@ -8,5 +8,10 @@
             helper.getPopularArticlesHelper( component );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
-    }
+    },
+    hideSpinner : function(component,event,helper){
+                  setTimeout(function(){
+                   	component.set("v.toggleSpinner", false);
+                  }, 4000);
+             },
 })

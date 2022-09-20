@@ -5,11 +5,14 @@
     <aura:handler event="c:HandleSearchListEvent" action="{!c.retrieveSearchListFromHandleSearchListEvent}"/>
     <aura:handler event="c:ShowBlacklistArticles" action="{!c.getBlacklistArticles}"/>
     <aura:handler event="c:ShowWhitelistArticles" action="{!c.getWhitelistArticles}"/>
+<!--    <aura:handler event="c:ChangeSearchListTitleToWhitelistEvent" action="{!c.changeSearchListTitleToWhitelist}"/>-->
+<!--    <aura:handler event="c:ChangeSearchListTitleToBlacklistEvent" action="{!c.changeSearchListTitleToBlacklist}"/>-->
+<!--    <aura:handler event="c:ChangeSearchListTitleToDefaultEvent" action="{!c.changeSearchListTitleToDefault}"/>-->
     <aura:handler name="init" value="this" action="{!c.doInit}"/>
 
     <aura:attribute name="articleList" type="Article[]"/>
     <aura:attribute name="paginationList" type="Article[]"/>
-    <aura:attribute name="pageSize" type="Integer" default="2"/>
+    <aura:attribute name="pageSize" type="Integer" default="5"/>
     <aura:attribute name="totalSize" type="Integer"/>
     <aura:attribute name="start" type="Integer"/>
     <aura:attribute name="end" type="Integer"/>
@@ -35,57 +38,45 @@
     </aura:if>
     <aura:if isTrue="{!v.isSearchListNotEmpty}">
         <table class="">
-            <h2 class="slds-size_large slds-align_absolute-center">{!v.listTitle}</h2>
+<!--            <h2 class="slds-size_large slds-align_absolute-center slds-text-heading_medium">{!v.listTitle}</h2>-->
             <lightning:card title="" class="noBorder slds-align_absolute-center">
                 <table class="slds-table">
-                    <tbody class="">
                     <aura:iteration
                             items="{!v.paginationList}"
                             var="item"
                             indexVar="index">
-                        <tr style="cursor:pointer;width:100%"
+                        <div style="cursor:pointer;width:100%"
                             class="
+                            flexDivColumn
                             slds-box_border
                             slds-p-around_medium
-                            slds-text-body_regular
-                            slds-large-size_large
-                            slds-grid
                             slds-m-right_none"
                             data-record="{!index}"
                             onclick="{!c.selectArticle}">
-                            <td class="
-                                    slds-col
-                                    slds-size_2-of-6
+
+                            <div class="flexDivRow">
+                                <div class="
                                     slds-align_absolute-center
                                     slds-p-horizontal_none
                                     slds-p-vertical_none">
-                                <img src="{!item.urlToImage}" style="float: left;width: 200px; height: 200px; object-fit: contain;"/>
-                            </td>
-                            <td class="slds-size_2-of-3">
-                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-truncate">
-                                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-truncate">
-                                        <p class="slds-truncate" style="width: 600px"></p>
-                                    </lightning:layoutItem>
-                                </lightning:layout>
-                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large slds-truncate">
-                                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-truncate">
-                                        <p class="slds-truncate" style="width: 600px">{!item.title}</p>
-                                    </lightning:layoutItem>
-                                </lightning:layout>
-                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
-                                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box">
-                                        <p class="">{!item.author}</p>
-                                    </lightning:layoutItem>
-                                </lightning:layout>
-<!--                                <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">-->
-<!--                                    <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box">-->
-<!--                                        <p class="">{!item.publishedAt}</p>-->
-<!--                                    </lightning:layoutItem>-->
-<!--                                </lightning:layout>-->
-                            </td>
-                        </tr>
+                                    <img class="slds-p-around_medium" src="{!item.urlToImage}"
+                                         style="float: left;width: 200px; height: 200px; object-fit: cover;"/>
+                                </div>
+                                <div>
+                                    <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
+                                        <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box">
+                                            <p class="slds-line-clamp_large" style="width: 350px">{!item.description}</p>
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+                                    <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
+                                        <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box">
+                                            <p class="">{!item.author}</p>
+                                        </lightning:layoutItem>
+                                    </lightning:layout>
+                                </div>
+                            </div>
+                        </div>
                     </aura:iteration>
-                    </tbody>
                 </table>
             </lightning:card>
 
@@ -132,7 +123,8 @@
                                     <lightning:layoutItem flexibility="auto" padding="around-small" class="custom-box slds-size_1-of-1">
                                         <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                                             <p>{!v.selectedArticle.content}</p>
-                                            <a href="{!v.selectedArticle.url}" target="_blank">Read full article here!</a>
+                                            <p></p>
+                                            <a href="{!v.selectedArticle.url}" target="_blank">Source</a>
                                         </div>
                                     </lightning:layoutItem>
                                 </lightning:layout>
@@ -182,7 +174,7 @@
                                                             title="Thank you for your comment!"
                                                             severity="info"
                                                             class="slds-m-horizontal_none">
-                                                        This comment is waiting for approval process.
+                                                        This comment is waiting for acceptation.
                                                     </ui:message>
                                                 </div>
                                             </aura:set>
@@ -245,10 +237,17 @@
                 </section>
                 <div class="slds-backdrop slds-backdrop_open"></div>
             </aura:if>
-            <div class="slds-size_1-of-2 slds-align_absolute-center">
-                <lightning:button label="Previous" disabled="{!v.start == 0}" onclick="{!c.previous}"/>
-                <lightning:button label="Next" disabled="{!v.end >= v.totalSize - 2}" onclick="{!c.next}"/>
-            </div>
+            <lightning:layout horizontalAlign="space" class="slds-size_1-of-2 slds-align_absolute-center">
+                <lightning:layoutItem padding="around-small">
+                    <p class="slds-float_left">Total number of articles: {!v.totalSize} </p>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    <lightning:button label="Previous" disabled="{!v.start == 0}" onclick="{!c.previous}"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="around-small">
+                    <lightning:button label="Next" disabled="{!v.end >= v.totalSize - 5}" onclick="{!c.next}"/>
+                </lightning:layoutItem>
+            </lightning:layout>
         </table>
         <aura:set attribute="else">
             <div class="slds-m-left_large">

@@ -1,5 +1,6 @@
 ({
     getPopularArticlesHelper: function(component, event, helper){
+        component.set('v.toggleSpinner',true);
         console.log('helper work');
         let getPopularArticlesFromBackend = component.get( "c.getPopularArticles" );
         getPopularArticlesFromBackend.setCallback( this, function( response ) {
@@ -9,5 +10,6 @@
             return;
         });
         $A.enqueueAction( getPopularArticlesFromBackend );
-    }
+    },
+
 })

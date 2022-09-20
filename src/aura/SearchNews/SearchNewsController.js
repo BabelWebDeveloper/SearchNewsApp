@@ -24,9 +24,13 @@
             helper.handleSearch( component, searchKeyWord, searchCategory, event );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
-        let eventSpinner = $A.get("e.c:LayoutSpinner");
-                    eventSpinner.fire();
+        component.set("v.searchTitle", "Search List");
+//        let eventSpinner = $A.get("e.c:LayoutSpinner");
+//                    eventSpinner.fire();
         let changeVisibilityToListEvent = $A.get("e.c:ChangeVisibilityToListEvent");
+//        changeVisibilityToListEvent.setParams({
+//                            "title" : "search"
+//                        });
                     changeVisibilityToListEvent.fire();
                     return;
     },
@@ -41,9 +45,13 @@
             helper.handleSearchBlacklist( component, event );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
-        let eventSpinner = $A.get("e.c:LayoutSpinner");
-                    eventSpinner.fire();
+        component.set("v.searchTitle", "Blacklist");
+//        let eventSpinner = $A.get("e.c:LayoutSpinner");
+//                    eventSpinner.fire();
         let changeVisibilityToListEvent = $A.get("e.c:ChangeVisibilityToListEvent");
+//        changeVisibilityToListEvent.setParams({
+//                    "title" : "blacklist"
+//                });
                     changeVisibilityToListEvent.fire();
                     return;
     },
@@ -58,6 +66,7 @@
             helper.handleSearchWhitelist( component, event );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
+        component.set("v.searchTitle", "Whitelist");
         let eventSpinner = $A.get("e.c:LayoutSpinner");
                     eventSpinner.fire();
         let changeVisibilityToListEvent = $A.get("e.c:ChangeVisibilityToListEvent");

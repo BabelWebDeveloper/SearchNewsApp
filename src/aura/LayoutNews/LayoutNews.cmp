@@ -1,5 +1,7 @@
 <aura:component implements="flexipage:availableForAllPageTypes,force:appHostable">
 <!--    <ltng:require styles="{!$Resource.Noheader}"></ltng:require>-->
+    <aura:registerEvent name="changeSearchListTitleToWhitelistEvent" type="c:ChangeSearchListTitleToWhitelistEvent"/>
+    <aura:registerEvent name="changeSearchListTitleToBlacklistEvent" type="c:ChangeSearchListTitleToBlacklistEvent"/>
     <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
     <aura:handler event="c:LayoutSpinner" action="{!c.afterSearchSpinner}"/>
     <aura:handler event="c:LayoutSpinnerClose" action="{!c.hideSpinner}"/>

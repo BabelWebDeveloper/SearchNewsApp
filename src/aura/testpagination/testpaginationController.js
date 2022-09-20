@@ -1,5 +1,6 @@
 ({
     doInit : function(component, event, helper) {
+        component.set('v.toggleSpinner',true);
         let action = component.get("c.fetchUser");
         action.setCallback(this, function(response) {
             let state = response.getState();
@@ -12,6 +13,7 @@
         return;
     },
     retrieveSearchListFromHandleSearchListEvent : function(component, event, helper){
+        component.set('v.toggleSpinner',true);
         let pageSize = component.get("v.pageSize");
         let articlesFromHandleSearchListEvent = event.getParam('articles');
         let getSearchedCategory = event.getParam('category');
@@ -34,6 +36,7 @@
     },
 
     onSelectChange : function(component, event, helper) {
+        component.set('v.toggleSpinner',true);
         let selected = component.find("records").get("v.value");
         let paginationList = [];
         let oppList = component.get("v.articleList");
@@ -129,6 +132,7 @@
         component.set("v.paginationList", paginationList);
     },
     selectArticle : function(component, event, helper){
+        component.set('v.toggleSpinner',true);
         let target = component.get("v.paginationList")[event.currentTarget.dataset.record],
         selectedArticle = JSON.stringify(target);
         component.set("v.selectedArticle", target);
@@ -152,6 +156,7 @@
         return;
     },
     saveNewComment : function (component, event, helper) {
+        component.set('v.toggleSpinner',true);
         let comment = component.get( "v.newComment" );
         let selectedArticle = component.get("v.selectedArticle");
         let category = component.get("v.categoryForSelect");
@@ -166,6 +171,7 @@
         return;
     },
     addToBlacklist: function(component, event, helper) {
+        component.set('v.toggleSpinner',true);
         let selectedArticle = component.get("v.selectedArticle");
         let category = component.get("v.categoryForSelect");
         console.log('addToBlacklist CONTROLLER category: ' + category);
@@ -179,6 +185,7 @@
         return;
     },
     addToWhitelist: function(component, event, helper) {
+        component.set('v.toggleSpinner',true);
         let selectedArticle = component.get("v.selectedArticle");
         let category = component.get("v.categoryForSelect");
         console.log('addToWhitelist CONTROLLER category: ' + category);
@@ -192,6 +199,7 @@
         return;
     },
     removeFromWhitelist : function(component, event, helper) {
+//        component.set('v.toggleSpinner',true);
         let selectedArticle = component.get( "v.selectedArticle" );
         let delayMillis = 500;
         let timeoutId = component.get( "v.searchTimeoutId" );
@@ -200,9 +208,12 @@
             helper.removeFromWhitelistHelper( component, selectedArticle );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
+//        let eventSpinner = $A.get("e.c:SearchAgain");
+//                eventSpinner.fire();
         return;
     },
     removeFromBlacklist : function(component, event, helper) {
+//        component.set('v.toggleSpinner',true);
         let selectedArticle = component.get( "v.selectedArticle" );
         let delayMillis = 500;
         let timeoutId = component.get( "v.searchTimeoutId" );
@@ -211,8 +222,8 @@
             helper.removeFromBlacklistHelper( component, selectedArticle );
         }), delayMillis );
         component.set( "v.searchTimeoutId", timeoutId );
-//        var a = component.get('c.getBlacklistArticles');
-//        $A.enqueueAction(a);
+//        let eventSpinner = $A.get("e.c:SearchAgain");
+//                eventSpinner.fire();
         return;
     },
     getBlacklistArticles : function(component, event, helper) {
@@ -244,10 +255,22 @@
         component.set( "v.searchTimeoutId", timeoutId );
         component.set("v.articleInBlacklist",false);
         component.set("v.articleInWhitelist",true);
-        component.set("v.listTitle", "Articles In Whitelist");
         return;
     },
      hideSpinner : function(component,event,helper){
         component.set("v.toggleSpinner", false);
     },
+    changeSearchListTitleToWhitelist : function(component, event, helper){
+        component.set("v.listTitle", "Articles In Whitelist");
+        console.log('component listTitle: '+ component.get("v.listTitle"));
+    },
+    changeSearchListTitleToBlacklist : function(component, event, helper){
+        component.set("v.listTitle", "Articles In Blacklist");
+        console.log('component listTitle: '+ component.get("v.listTitle"));
+    },
+    changeSearchListTitleToDefault : function(component, event, helper){
+        component.set("v.listTitle", "Search List");
+                console.log('component listTitle: '+ component.get("v.listTitle"));
+    }
+
 });

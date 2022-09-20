@@ -69,6 +69,7 @@
         }
     },
     addArticleToBlacklistHelper: function( component, selectedArticle, categoryFromController ){
+        component.set('v.toggleSpinner',true);
         let addArticleToBlacklistBackend = component.get( "c.addArticleToBlacklist" );
 
         let id = selectedArticle.id;
@@ -82,7 +83,6 @@
         let content = selectedArticle.content;
         let category = categoryFromController;
 
-        console.log('addArticleToBlacklistHelper HELPER category: ' + categoryFromController);
 
         addArticleToBlacklistBackend.setParams({
             id: id,
@@ -107,6 +107,7 @@
         eventSpinner.fire();
     },
     addArticleToWhitelistHelper: function( component, selectedArticle, categoryFromController ){
+        component.set('v.toggleSpinner',true);
         let addArticleToWhitelistBackend = component.get( "c.addArticleToWhitelist" );
 
         let id = selectedArticle.id;
@@ -120,7 +121,6 @@
         let content = selectedArticle.content;
         let category = categoryFromController;
 
-        console.log('addArticleToWhitelistHelper HELPER category: ' + categoryFromController);
 
         addArticleToWhitelistBackend.setParams({
             id: id,
@@ -138,7 +138,6 @@
         addArticleToWhitelistBackend.setCallback( this, function( response ) {
             let responseSearchList = response.getReturnValue();
             let responseStatus = response.getState();
-//            if
             return;
         });
         $A.enqueueAction( addArticleToWhitelistBackend );
@@ -147,18 +146,22 @@
         eventSpinner.fire();
     },
     removeFromWhitelistHelper: function( component, selectedArticle ) {
+        component.set('v.toggleSpinner',true);
         let id = selectedArticle.id;
         let removeFromWhitelistBackend = component.get( "c.removeFromWhitelistBackend" );
         removeFromWhitelistBackend.setParams({
             id: id
         });
         removeFromWhitelistBackend.setCallback( this, function( response ) {
-            component.set("v.isModalOpen", false);
             return;
         });
         $A.enqueueAction( removeFromWhitelistBackend );
+        component.set("v.isModalOpen", false);
+        let eventSpinner = $A.get("e.c:SearchAgain");
+                        eventSpinner.fire();
     },
     removeFromBlacklistHelper: function( component, selectedArticle ) {
+        component.set('v.toggleSpinner',true);
         let id = selectedArticle.id;
         let removeFromBlacklistBackend = component.get( "c.removeFromBlacklistBackend" );
         removeFromBlacklistBackend.setParams({
@@ -166,10 +169,12 @@
         });
         removeFromBlacklistBackend.setCallback( this, function( response ) {
             let responseSearchList = response.getReturnValue();
-            component.set("v.isModalOpen", false);
             return;
         });
         $A.enqueueAction( removeFromBlacklistBackend );
+        component.set("v.isModalOpen", false);
+        let eventSpinner = $A.get("e.c:SearchAgain");
+                        eventSpinner.fire();
     },
     getBlacklistArticlesHelper: function( component ) {
         let showBlacklistArticlesBackend = component.get( "c.showBlacklistArticles" );

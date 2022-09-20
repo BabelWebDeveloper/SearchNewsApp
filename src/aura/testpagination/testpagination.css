@@ -25,3 +25,11 @@
 .THIS .modalFooter{
     width: 100%;
 }
+.THIS .flexDivColumn{
+    display: flex;
+    flex-direction: column;
+}
+.THIS .flexDivRow{
+    display: flex;
+    flex-direction: row;
+}
